@@ -1,0 +1,107 @@
+<Envelope xmlns="http://arbetsformedlingen.se/LedigtArbete" version="0.52">
+  <Sender id="XXXYYYZZZ" email="a@example.com"/>
+  <TransactInfo timeStamp="2017-08-20T18:40:49Z">
+    <TransactId>8b3b2d02-e741-4c3a-a53f-52bca639ee9a</TransactId>
+  </TransactInfo>
+  <Packet>
+    <PacketInfo>
+      <PacketId>1</PacketId>
+    </PacketInfo>
+    <Payload>
+      <JobPositionPosting status="active">
+        <JobPositionPostingId>46-XXYYZZ-XXYY-1</JobPositionPostingId>
+        <HiringOrg>
+          <HiringOrgName>ACME AB</HiringOrgName>
+          <HiringOrgId idOwner="XXYYZZXXYY">46-XXYYZZ-XXYY</HiringOrgId>
+          <Contact>
+            <PostalAddress>
+              <PostalCode>11356</PostalCode>
+              <Municipality>0180</Municipality>
+              <DeliveryAddress>
+                <AddressLine>Birger Jarlsgatan 57, 11356, stockholm</AddressLine>
+                <StreetName>Birger Jarlsgatan 57</StreetName>
+              </DeliveryAddress>
+            </PostalAddress>
+          </Contact>
+        </HiringOrg>
+        <PostDetail>
+          <StartDate>
+            <Date>2017-08-20</Date>
+          </StartDate>
+          <EndDate>
+            <Date/>
+          </EndDate>
+          <PostedBy>
+            <Contact>
+              <PersonName>
+                <FormattedName>John Doe</FormattedName>
+              </PersonName>
+              <E-mail>john@example.com</E-mail>
+            </Contact>
+          </PostedBy>
+        </PostDetail>
+        <JobPositionInformation>
+          <JobPositionTitle>A title</JobPositionTitle>
+          <JobPositionDescription>
+            <JobPositionPurpose>A purpose</JobPositionPurpose>
+            <JobPositionLocation>
+              <PostalAddress>
+                <CountryCode>SE</CountryCode>
+                <PostalCode>11356</PostalCode>
+                <Municipality>0180</Municipality>
+                <DeliveryAddress>
+                  <AddressLine>Birger Jarlsgatan 58, 11356, stockholm</AddressLine>
+                  <StreetName>Birger Jarlsgatan 58</StreetName>
+                </DeliveryAddress>
+              </PostalAddress>
+              <LocationSummary>
+                <Municipality>0180</Municipality>
+                <CountryCode>SE</CountryCode>
+              </LocationSummary>
+            </JobPositionLocation>
+            <Classification>
+              <Schedule>
+                <FullTime></FullTime>
+                <SummaryText>3 days a week 8.00-17.00</SummaryText>
+              </Schedule>
+              <Duration>
+                <Regular></Regular>
+                <SummaryText>3 days a week 8.00-17.00</SummaryText>
+              </Duration>
+            </Classification>
+            <CompensationDescription>
+              <Pay>
+                <SalaryMonthly currency="SEK">1</SalaryMonthly>
+              </Pay>
+              <SummaryText>Your salary will be...</SummaryText>
+            </CompensationDescription>
+          </JobPositionDescription>
+          <JobPositionRequirements>
+            <QualificationsRequired>
+              <P>A summary</P>
+              <Qualification type="experience" yearsOfExperience="1"/>
+              <Qualification type="license" description="DriversLicense" category="B,C1"/>
+              <Qualification type="equipment" description="Car"/>
+            </QualificationsRequired>
+            <QualificationsPreferred>
+              <P>A summary</P>
+            </QualificationsPreferred>
+          </JobPositionRequirements>
+        </JobPositionInformation>
+        <HowToApply distribute="external">
+          <ApplicationMethods>
+            <ByWeb>
+              <URL>https://example.com</URL>
+              <SummaryText>Goto our website</SummaryText>
+            </ByWeb>
+          </ApplicationMethods>
+        </HowToApply>
+        <NumberToFill>1</NumberToFill>
+        <JPPExtension>
+          <HiringOrgDescription>A company description</HiringOrgDescription>
+          <OccupationGroup code="4896" codename="OccupationNameID"/>
+        </JPPExtension>
+      </JobPositionPosting>
+    </Payload>
+  </Packet>
+</Envelope>

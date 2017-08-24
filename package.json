@@ -1,0 +1,24 @@
+{
+  "name": "jobcentre-api",
+  "version": "1.0.0",
+  "description": "Testing Job Centre API",
+  "main": "app.js",
+  "repository": "none",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dholmberg@othermachines.com",
+  "license": "ISC",
+  "dependencies": {
+    "http": "0.0.0",
+    "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.5.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.3.0"
+  }
+}
