@@ -18,11 +18,13 @@ const options = {
   indent: '  ',
 };
 
-const requestString = new Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options)
+const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options)
   .sender(1, 'foo@bar.com')
   .transaction('ID HERE');
 
-console.log(`${requestString}`);
+console.log(request.doc.Envelope);
+
+console.log(`${request}`);
 process.exit();
 
 const httpOptions = {

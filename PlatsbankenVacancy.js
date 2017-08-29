@@ -1,59 +1,110 @@
+/*
+* Throughout there are comments preceded with "HRXML 0.99"
+* These are notes take from the documentation provided by Arbetsförmedling
+* in the file "Extern_hrxml_format_description_Vers 0 99.xls"
+*/
+
 const xml = require('xml');
 
-/**
- * Create an XML document (or fragement) suitable for submission to
- *  Arbetsföremedlingen Platsbanken
- *
- * @param  {string} xmlns    XML namespace
- * @param  {string} version  Version of HR-XML-SE used. As of 2017-08-24
- *  must be "0.52"
- * @param  {type} xmlOptions Options to be passed to xml(). Cf. Node xml
- * @return {type}            Returns new PlatsbankenVacancy object
- */
-const PlatsbankenVacancy = function PlatsbankenVacancy(xmlns, version, xmlOptions) {
-  this.options = xmlOptions;
-  this.doc = {
+const PlatsbankenVacancy = ({
+  xmlns = 'http://api.arbetsformedlingen.se/ledigtarbete',
+  version = '0.52',
+  xmlOptions = { indent: '  ' },
+} = {}) => ({
+  xmlns,
+  version,
+  xmlOptions,
+
+  packetCount: 0,
+
+  doc: {
     Envelope: [{
       _attr: { xmlns, version },
     }],
-  };
-};
+  },
 
-PlatsbankenVacancy.prototype.toXml = (obj, options = {}) => xml(obj, options);
+  toXml: (obj, options = {}) => xml(obj, options),
+  toString() { return this.toXml(this.doc, this.xmlOptions); },
 
-PlatsbankenVacancy.prototype.toString = function toString() {
-  return this.toXml(this.doc, this.options);
-};
+  /*
+  * HRXML 0.99
+  * <Sender:id>
+  * Your company's customer number at Arbetsformedlingen
+  * Customer number is supplied by Arbetsförmedlingen.
+  * Note: this is an element attribute.
+  */
 
-PlatsbankenVacancy.prototype.rawSender = (id, email) => (
-  { Sender: { _attr: { id, email } } }
-);
+  /*
+  * HRXML 0.99
+  * <Sender:email>
+  * A valid e-mail address where receipt of file and error messages is sent to,
+  *  max 3 email adress, seperated with semicolon ;
+  * Ex: emailaddress@domain.com
+  * Note: this is an element attribute.
+  */
+  rawSender: (id, email) => ({ Sender: { _attr: { id, email } } }),
+  sender(id, email) {
+    this.doc.Envelope.push(this.rawSender(id, email));
+    return this;
+  },
 
-/**
- * sender - description
- *
- * @param  {type} id    description
- * @param  {type} email description
- * @return {type}       description
- */
-PlatsbankenVacancy.prototype.sender = function sender(id, email) {
-  this.doc.Envelope.push(this.rawSender(id, email));
-  return this;
-};
+  /*
+  * HRXML 0.99
+  * <TransactInfo:timeStamp>
+  * Your internal timestamp for this particular transaction.
+  * fff is for milliseconds.
+  * Format constraints: ISO 8601
+  */
 
-PlatsbankenVacancy.prototype.transaction = function transaction(id) {
-  const timeStamp = '2017-08-20T18:40:49Z';
+  /*
+  * HRXML 0.99
+  * <TransactId>
+  * Your internal id for this particular transaction. Recommended that this
+  *  is a UUID/GUID. (Globally unique identifier), will be shown in the
+  *  confirm email for submitted files.
+  */
+  rawTransaction: (id) => {
+    const timeStamp = '2017-08-20T18:40:49Z';
+    return {
+      TransactInfo: [
+        { _attr: { timeStamp } },
+        { TransactId: id },
+      ],
+    };
+  },
+  transaction(id) {
+    this.doc.Envelope.push(this.rawTransaction(id));
 
-  this.doc.Envelope.push({
-    TransactionInfo: [
-      {
-        _attr: { timeStamp },
-      }, {
-        TransactId: id,
-      },
-    ],
-  });
-  return this;
-};
+    // one transaction can contain many packets
+    // but each transaction must have at least one
+    this.packetCount = this.packetCount + 1;
+    this.doc.Envelope.push(this.rawPacket(this.packetCount));
 
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
+  * <PacketId>
+  * One Envelope can contain many packets. PacketID is the identifier for
+  * each packet. This should be a counter, starting at 1, and is used
+  * for traceability.
+  */
+  rawPacket: (id = 1) => ({
+    Packet: [{
+      PacketInfo: [{
+        PacketId: id,
+      }],
+    }, {
+      Payload: [],
+    }],
+  }),
+
+  packet() {
+    this.packetCount = this.packetCount + 1;
+    this.doc.Envelope.push(this.rawPacket(this.packetCount));
+    return this;
+  },
+
+});
 module.exports = PlatsbankenVacancy;
