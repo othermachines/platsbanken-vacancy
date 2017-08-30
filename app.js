@@ -2,6 +2,8 @@ const Vacancy = require('./PlatsbankenVacancy.js');
 
 const http = require('http');
 
+const util = require('util');
+
 const hostname = 'localhost';
 const port = 80;
 const env = 'development';
@@ -18,12 +20,23 @@ const options = {
   indent: '  ',
 };
 
-const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options)
-  .sender(1, 'foo@bar.com')
-  .transaction('ID HERE');
+const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
 
-console.log(request.doc.Envelope);
+try {
+  request
+    .sender({ id: 1, email: 'foo@bar.com' })
+    .transaction({ id: 'ID HERE' })
+    .jobPositionPosting({ status: 'active', postingId: 1 });
+} catch (err) {
+  console.log(err);
+  process.exit(1);
+}
 
+
+console.log(util.inspect(request.doc, false, null, true));
+console.log();
+console.log('-'.repeat(80));
+console.log();
 console.log(`${request}`);
 process.exit();
 

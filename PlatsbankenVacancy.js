@@ -16,6 +16,10 @@ const PlatsbankenVacancy = ({
   xmlOptions,
 
   packetCount: 0,
+  ref: {
+    Packet: [],
+    Payload: [],
+  },
 
   doc: {
     Envelope: [{
@@ -42,9 +46,9 @@ const PlatsbankenVacancy = ({
   * Ex: emailaddress@domain.com
   * Note: this is an element attribute.
   */
-  rawSender: (id, email) => ({ Sender: { _attr: { id, email } } }),
-  sender(id, email) {
-    this.doc.Envelope.push(this.rawSender(id, email));
+  rawSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
+  sender({ id, email } = {}) {
+    this.doc.Envelope.push(this.rawSender({ id, email }));
     return this;
   },
 
@@ -63,22 +67,16 @@ const PlatsbankenVacancy = ({
   *  is a UUID/GUID. (Globally unique identifier), will be shown in the
   *  confirm email for submitted files.
   */
-  rawTransaction: (id) => {
-    const timeStamp = '2017-08-20T18:40:49Z';
-    return {
-      TransactInfo: [
-        { _attr: { timeStamp } },
-        { TransactId: id },
-      ],
-    };
+  rawTransaction: ({ id: TransactId } = {}) => {
+    const _attr = { timeStamp: '2017-08-20T18:40:49Z' };
+    return { TransactInfo: [{ _attr }, { TransactId }] };
   },
   transaction(id) {
-    this.doc.Envelope.push(this.rawTransaction(id));
+    this.doc.Envelope.push(this.rawTransaction({ id }));
 
     // one transaction can contain many packets
     // but each transaction must have at least one
-    this.packetCount = this.packetCount + 1;
-    this.doc.Envelope.push(this.rawPacket(this.packetCount));
+    this.packet();
 
     return this;
   },
@@ -90,7 +88,7 @@ const PlatsbankenVacancy = ({
   * each packet. This should be a counter, starting at 1, and is used
   * for traceability.
   */
-  rawPacket: (id = 1) => ({
+  rawPacket: ({ id = 1 } = { id: 1 }) => ({
     Packet: [{
       PacketInfo: [{
         PacketId: id,
@@ -99,12 +97,50 @@ const PlatsbankenVacancy = ({
       Payload: [],
     }],
   }),
-
   packet() {
     this.packetCount = this.packetCount + 1;
+
     this.doc.Envelope.push(this.rawPacket(this.packetCount));
+    this.ref.Packet = this.doc.Envelope[this.doc.Envelope.length - 1].Packet;
+    this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
+
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <JobPositionPosting:status>
+  * active = jobplacement is to be published.
+  * inactive = jobplacement is to be removed from site.
+  * Note: this is an element attribute.
+  * Format constraints: string ['active' | 'inactive']
+  */
+
+  /*
+  * HRXML 0.99
+  * <JobPositionPostingId>
+  * This is a common identifier for this particular job position posting.
+  * Landskod-HiringOrgId-Valfri1-Valfri2
+  */
+  rawJobPositionPosting: ({
+    status, postingId: JobPositionPostingId,
+  } = { status: 'active' }) => {
+    if (status !== 'active' && status !== 'inactive') {
+      throw new Error(`Status must be "active" or "inactive", "${status}" received`);
+    }
+    return {
+      JobPositionPosting: [{
+        _attr: { status },
+      }, {
+        JobPositionPostingId,
+      }],
+    };
+  },
+  jobPositionPosting({ status = 'active', postingId } = { status: 'active' }) {
+    this.ref.Payload.push(this.rawJobPositionPosting({ status, postingId }));
+
+    return this;
+  },
 });
+
 module.exports = PlatsbankenVacancy;
