@@ -6,6 +6,31 @@
 
 const xml = require('xml');
 
+const Validator = require('better-validator');
+
+/* validators */
+isRequired = o => o.required();
+isPosInt = o => o.isNumber().integer().isPositive().required();
+isEmail = o => o.isString().isEmail().required();
+isActiveInactive = o => o.isString().isIn(['active', 'inactve']).required();
+
+/*
+* A bit of sugar to make better-validator more concise.
+*
+* rather than:
+*   const valitador = new Validator();
+*   validator(123).isNumber();
+*   const errs = validator.run();
+*   if (errs.length) { ... }
+*
+* we can do
+*   if (fails(123, o => o.isNumber()) { ... }
+*/
+const fails = (o, fn) => {
+  const validator = new Validator();
+  return validator(o, fn).length;
+};
+
 const PlatsbankenVacancy = ({
   xmlns = 'http://api.arbetsformedlingen.se/ledigtarbete',
   version = '0.52',
@@ -22,9 +47,7 @@ const PlatsbankenVacancy = ({
   },
 
   doc: {
-    Envelope: [{
-      _attr: { xmlns, version },
-    }],
+    Envelope: [{ _attr: { xmlns, version } }],
   },
 
   toXml: (obj, options = {}) => xml(obj, options),
@@ -48,6 +71,12 @@ const PlatsbankenVacancy = ({
   */
   rawSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
   sender({ id, email } = {}) {
+    if (fails(id, isPosInt)) {
+      throw new Error(`id must be a positive integer, "${id}" received`);
+    }
+    if (fails(email, isEmail)) {
+      throw new Error(`email must be an email address, "${email}" received`);
+    }
     this.doc.Envelope.push(this.rawSender({ id, email }));
     return this;
   },
@@ -72,6 +101,9 @@ const PlatsbankenVacancy = ({
     return { TransactInfo: [{ _attr }, { TransactId }] };
   },
   transaction(id) {
+    if (fails(id, isRequired)) {
+      throw new Error(`A transaction id is required.`);
+    }
     this.doc.Envelope.push(this.rawTransaction({ id }));
 
     // one transaction can contain many packets
@@ -89,13 +121,7 @@ const PlatsbankenVacancy = ({
   * for traceability.
   */
   rawPacket: ({ id = 1 } = { id: 1 }) => ({
-    Packet: [{
-      PacketInfo: [{
-        PacketId: id,
-      }],
-    }, {
-      Payload: [],
-    }],
+    Packet: [{ PacketInfo: [{ PacketId: id }] }, { Payload: [] }],
   }),
   packet() {
     this.packetCount = this.packetCount + 1;
@@ -123,24 +149,78 @@ const PlatsbankenVacancy = ({
   * Landskod-HiringOrgId-Valfri1-Valfri2
   */
   rawJobPositionPosting: ({
-    status, postingId: JobPositionPostingId,
-  } = { status: 'active' }) => {
-    if (status !== 'active' && status !== 'inactive') {
+    status,
+    id: JobPositionPostingId,
+  } = { status: 'active' }) => ({
+    JobPositionPosting: [{ _attr: { status } }, { JobPositionPostingId }],
+  }),
+  jobPositionPosting({ status = 'active', id } = { status: 'active' }) {
+    if (fails(status, isActiveInactive)) {
       throw new Error(`Status must be "active" or "inactive", "${status}" received`);
     }
-    return {
-      JobPositionPosting: [{
-        _attr: { status },
-      }, {
-        JobPositionPostingId,
-      }],
-    };
-  },
-  jobPositionPosting({ status = 'active', postingId } = { status: 'active' }) {
-    this.ref.Payload.push(this.rawJobPositionPosting({ status, postingId }));
+    this.ref.Payload.push(this.rawJobPositionPosting({ status, id }));
+
+    this.ref.JobPositionPosting = this.ref.Payload[this.ref.Payload.length - 1].JobPositionPosting;
 
     return this;
   },
+
+  /*
+  * HRXML 0.99
+  * <HiringOrgName>
+  * Company name. This is used to identify who the employer for the
+  *  particular job placement and will be shown in Platsbanken as company.
+  */
+
+  /*
+  * HRXML 0.99
+  * <HiringOrgId>
+  * Adjusted Swedish organisation number, here in form of
+  * country code (numerical) and Swedish organisation number
+  */
+
+  rawHiringOrg: ({
+    name: HiringOrgName,
+    id: HiringOrgId,
+    url: Website,
+  } = {}) => ({
+    HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { Website }],
+  }),
+  hiringOrg({ name, id, url } = {}) {
+    if (fails(name, isRequired)) {
+      throw new Error(`Organization name is required.`);
+    }
+    if (fails(id, isRequired)) {
+      throw new Error(`Organziation id is required.`);
+    }
+    if (fails(url, o => o.isString().isURL())) {
+      throw new Error(`url (if used) should be a fully qualified URL, "${url}" recieved.`);
+    }
+
+    this.ref.JobPositionPosting.push(this.rawHiringOrg({ name, id, url }));
+    this.ref.HiringOrg =
+      this.ref.JobPositionPosting[this.ref.JobPositionPosting.length - 1].JobPositionPosting;
+
+    return this;
+  },
+
+  rawJobPostingContact: ({
+    postalCode: PostalCode,
+    municipality: Municipality,
+    addressLine: AddressLine,
+    streetName: StreetName,
+  } = {}) => ({
+    Contact: [
+      { PostalAddress: [{ PostalCode }, { Municipality }] },
+      { DeliveryAddress: [{ AddressLine }, { StreetName }] },
+    ],
+  }),
+  jobPostingContact({ postalCode, municipality, addressLine, streetName } = {}) {
+    this.ref.JobPositionPosting.push(this.rawJobPostingContact({
+      postalCode, municipality, addressLine, streetName,
+    }));
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;

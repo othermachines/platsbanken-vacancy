@@ -26,12 +26,13 @@ try {
   request
     .sender({ id: 1, email: 'foo@bar.com' })
     .transaction({ id: 'ID HERE' })
-    .jobPositionPosting({ status: 'active', postingId: 1 });
+    .jobPositionPosting({ status: 'active', id: 1 })
+    .hiringOrg({ name: 'IES', id: 'IES-HIRING-ORG-ID', url: 'http://example.org' })
+    .jobPostingContact({ postalCode: 'POSTAL CODE', municipality: 'MUNI', addressLine: 'ADDRESS', streetName: 'STREET' });
 } catch (err) {
   console.log(err);
   process.exit(1);
 }
-
 
 console.log(util.inspect(request.doc, false, null, true));
 console.log();
