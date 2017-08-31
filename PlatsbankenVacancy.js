@@ -204,20 +204,33 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <PostalAddress>
+  * Appears under the heading 'Arbetsgivare (Postadress/Besöksadress)' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <CountryCode>
+  * Country codes according to ISO 31661-1 alpha-2. (SE for Sweden.)
+  */
+
   rawJobPostingContact: ({
+    countryCode: CountryCode,
     postalCode: PostalCode,
     municipality: Municipality,
     addressLine: AddressLine,
     streetName: StreetName,
   } = {}) => ({
     Contact: [
-      { PostalAddress: [{ PostalCode }, { Municipality }] },
+      { PostalAddress: [{ CountryCode }, { PostalCode }, { Municipality }] },
       { DeliveryAddress: [{ AddressLine }, { StreetName }] },
     ],
   }),
-  jobPostingContact({ postalCode, municipality, addressLine, streetName } = {}) {
+  jobPostingContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
     this.ref.JobPositionPosting.push(this.rawJobPostingContact({
-      postalCode, municipality, addressLine, streetName,
+      countryCode, postalCode, municipality, addressLine, streetName,
     }));
   },
 
