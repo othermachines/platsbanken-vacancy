@@ -26,9 +26,10 @@ try {
   request
     .sender({ id: 1, email: 'foo@bar.com' })
     .transaction({ id: 'ID HERE' })
-    .jobPositionPosting({ status: 'active', id: 1 })
+    .jobPositionPosting({ id: 1, status: 'active' })
     .hiringOrg({ name: 'IES', id: 'IES-HIRING-ORG-ID', url: 'http://example.org' })
-    .jobPostingContact({ countryCode: 'SE', postalCode: 'POSTL', municipality: 'MUNI', addressLine: 'ADDRESS', streetName: 'STREET' });
+    .jobPostingContact({ countryCode: 'SE', postalCode: 'POSTL', municipality: 'MUNI', addressLine: 'ADDRESS', streetName: 'STREET' })
+    .postDetail({ startDate: '2018-09-01', endDate: '2018-12-01', recruiterName: 'Alex Smith', recruiterEmail: 'alexsmith@example.org' });
 } catch (err) {
   console.log(err);
   process.exit(1);

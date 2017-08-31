@@ -198,7 +198,6 @@ const PlatsbankenVacancy = ({
     }
 
     this.ref.JobPositionPosting.push(this.rawHiringOrg({ name, id, url }));
-    console.log(this.ref.JobPositionPosting.length);
     this.ref.HiringOrg =
       this.ref.JobPositionPosting[this.ref.JobPositionPosting.length - 1].HiringOrg;
 
@@ -296,7 +295,41 @@ const PlatsbankenVacancy = ({
     this.ref.HiringOrg.push(this.rawJobPostingContact({
       countryCode, postalCode, municipality, addressLine, streetName,
     }));
+
+    return this;
   },
+
+  rawPostDetail: ({
+    startDate,
+    endDate,
+    recruiterName,
+    recruiterEmail,
+  } = {}) => ({
+    PostDetail: [
+      { StartDate: [
+        { Date: startDate },
+      ] },
+      { EndDate: [
+        { Date: endDate },
+      ] },
+      { PostedBy: [
+        { Contact: [
+          { PersonName: [
+            { FormattedName: recruiterName },
+          ] },
+          { 'E-mail': recruiterEmail },
+        ] },
+      ] },
+    ],
+  }),
+  postDetail({ startDate, endDate, recruiterName, recruiterEmail } = {}) {
+    this.ref.JobPositionPosting.push(
+      this.rawPostDetail({ startDate, endDate, recruiterName, recruiterEmail }),
+    );
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;
