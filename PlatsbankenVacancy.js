@@ -433,20 +433,45 @@ const PlatsbankenVacancy = ({
   }),
   jobPositionInformation() {
     if (!this.ref.JobPositionPosting) {
-      throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+      throw new Error('JobPositionInformation must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
     this.ref.JobPositionPosting.push(this.rawJobPositionInformation());
-  },
 
-  jobPositionPurpose() {
-    if (!this.ref.JobPositionPosting) {
-      throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
-    }
+    this.makeRef({
+      obj: this.ref,
+      target: 'JobPositionInformation',
+      parent: 'JobPositionPosting',
+    });
+
     return this;
   },
 
-  jobPositionLocation() {
+  /* HRSML 0.99
+  * <JobPositionTitle>
+  * Position title; used as the headline in the advert.
+  * We recommend that you include the title of the occupation in the headline.
+  */
+
+  rawJobPositionTitle: ({ title: JobPositionTitle } = {}) => ({ JobPositionTitle }),
+  jobPositionTitle({ title } = {}) {
+    if (fails(title, isRequired)) {
+      throw new Error(`A job title is required.`);
+    }
+
+    if (fails(title, o =>
+      o.isString()
+        .isLength({ min: 0, max: 75 })
+        .required())) {
+      throw new Error(`A job title is required and must be less than 75 characters, received "${title}"`);
+    }
+
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    this.ref.JobPositionInformation.push(this.rawJobPositionTitle({ title }));
+
     return this;
   },
 
