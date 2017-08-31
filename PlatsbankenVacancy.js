@@ -216,6 +216,38 @@ const PlatsbankenVacancy = ({
   * Country codes according to ISO 31661-1 alpha-2. (SE for Sweden.)
   */
 
+  /*
+  * HRXML 0.99
+  * <PostalCode>
+  * The postal code for the delivery address. Must be a valid postcode without spaces.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Municipality>
+  * Name of town/city for the delivery address
+  */
+
+  /*
+  * HRXML 0.99
+  * <AddressLine>
+  * Element can not be repeated.
+  * The workplaces' visiting address.
+  * Will be shown under heading 'Besöksadress' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <StreetName>
+  * Street name for the delivery address of the workplace.
+  * (Either this or PostOfficeBox must be specified.)
+  *
+  * Note that PostOfficeBox is not implemented here. To make that a valid
+  * option, check whether StreetName or PostOfficeBox is supplied and
+  * construct appropriately. PostOfficeBox would go in the same place
+  * StreetName currently is.
+  */
+
   rawJobPostingContact: ({
     countryCode: CountryCode,
     postalCode: PostalCode,
