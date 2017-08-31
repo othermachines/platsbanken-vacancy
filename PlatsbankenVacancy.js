@@ -261,6 +261,37 @@ const PlatsbankenVacancy = ({
     ],
   }),
   jobPostingContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
+    if (fails(countryCode, isRequired)) {
+      throw new Error(`countryCode is required.`);
+    }
+    if (fails(countryCode, o => o.isLength({ min: 2, max: 2 }))) {
+      throw new Error(`countryCode must be 2 characters.`);
+    }
+    if (fails(postalCode, isRequired)) {
+      throw new Error(`postalcode is required.`);
+    }
+    if (fails(postalCode, o => o.isLength({ min: 5, max: 5 }))) {
+      throw new Error(`postalCode must be 5 characters.`);
+    }
+    if (fails(municipality, isRequired)) {
+      throw new Error(`municipality is required.`);
+    }
+    if (fails(municipality, o => o.isLength({ min: 0, max: 50 }))) {
+      throw new Error(`municipality must be less than 50 characters.`);
+    }
+    if (fails(addressLine, isRequired)) {
+      throw new Error(`addressLine is required.`);
+    }
+    if (fails(addressLine, o => o.isLength({ min: 0, max: 50 }))) {
+      throw new Error(`addressLine must be less than 50 characters.`);
+    }
+    if (fails(streetName, isRequired)) {
+      throw new Error(`streetName is required.`);
+    }
+    if (fails(streetName, o => o.isLength({ min: 0, max: 50 }))) {
+      throw new Error(`streetName must be less than 50 characters.`);
+    }
+
     this.ref.JobPositionPosting.push(this.rawJobPostingContact({
       countryCode, postalCode, municipality, addressLine, streetName,
     }));
