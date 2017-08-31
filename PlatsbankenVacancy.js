@@ -50,6 +50,16 @@ const PlatsbankenVacancy = ({
   toXml: (obj, options = {}) => xml(obj, options),
   toString() { return this.toXml(this.doc, this.xmlOptions); },
 
+  // writing this:
+  //   this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
+  // to manage references is a pain
+  makeRef: ({ obj, target, parent } = {}) => {
+    if (obj[target]) {
+      throw new Error(`"${target}" already exists as a reference key.`);
+    }
+    obj[target] = obj[parent][obj[parent].length - 1][target];
+  },
+
   /*
   * HRXML 0.99
   * <Sender:id>
@@ -123,9 +133,20 @@ const PlatsbankenVacancy = ({
   packet() {
     this.packetCount = this.packetCount + 1;
 
-    this.doc.Envelope.push(this.rawPacket(this.packetCount));
-    this.ref.Packet = this.doc.Envelope[this.doc.Envelope.length - 1].Packet;
-    this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
+    this.ref.Envelope = this.doc.Envelope;
+    this.ref.Envelope.push(this.rawPacket(this.packetCount));
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'Packet',
+      parent: 'Envelope',
+    });
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'Payload',
+      parent: 'Packet',
+    });
 
     return this;
   },
@@ -162,7 +183,11 @@ const PlatsbankenVacancy = ({
 
     this.ref.Payload.push(this.rawJobPositionPosting({ id, status }));
 
-    this.ref.JobPositionPosting = this.ref.Payload[this.ref.Payload.length - 1].JobPositionPosting;
+    this.makeRef({
+      obj: this.ref,
+      target: 'JobPositionPosting',
+      parent: 'Payload',
+    });
 
     return this;
   },
@@ -204,8 +229,12 @@ const PlatsbankenVacancy = ({
     }
 
     this.ref.JobPositionPosting.push(this.rawHiringOrg({ name, id, url }));
-    this.ref.HiringOrg =
-      this.ref.JobPositionPosting[this.ref.JobPositionPosting.length - 1].HiringOrg;
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'HiringOrg',
+      parent: 'JobPositionPosting',
+    });
 
     return this;
   },
@@ -396,6 +425,28 @@ const PlatsbankenVacancy = ({
       this.rawPostDetail({ startDate, endDate, recruiterName, recruiterEmail }),
     );
 
+    return this;
+  },
+
+  rawJobPositionInformation: () => ({
+    JobPositionInformation: [],
+  }),
+  jobPositionInformation() {
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+    }
+
+    this.ref.JobPositionPosting.push(this.rawJobPositionInformation());
+  },
+
+  jobPositionPurpose() {
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+    }
+    return this;
+  },
+
+  jobPositionLocation() {
     return this;
   },
 
