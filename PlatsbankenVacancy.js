@@ -41,10 +41,7 @@ const PlatsbankenVacancy = ({
   xmlOptions,
 
   packetCount: 0,
-  ref: {
-    Packet: [],
-    Payload: [],
-  },
+  ref: { },
 
   doc: {
     Envelope: [{ _attr: { xmlns, version } }],
@@ -158,6 +155,11 @@ const PlatsbankenVacancy = ({
     if (fails(status, isActiveInactive)) {
       throw new Error(`Status must be "active" or "inactive", "${status}" received`);
     }
+
+    if (!this.ref.Payload) {
+      throw new Error('JobPositionPosting must be attached to a Payload element. Did you call transaction()?');
+    }
+
     this.ref.Payload.push(this.rawJobPositionPosting({ id, status }));
 
     this.ref.JobPositionPosting = this.ref.Payload[this.ref.Payload.length - 1].JobPositionPosting;
@@ -195,6 +197,10 @@ const PlatsbankenVacancy = ({
     }
     if (fails(url, o => o.isString().isURL())) {
       throw new Error(`url (if used) should be a fully qualified URL, "${url}" recieved.`);
+    }
+
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
     this.ref.JobPositionPosting.push(this.rawHiringOrg({ name, id, url }));
@@ -292,6 +298,10 @@ const PlatsbankenVacancy = ({
       throw new Error(`streetName must be less than 50 characters.`);
     }
 
+    if (!this.ref.HiringOrg) {
+      throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
+    }
+
     this.ref.HiringOrg.push(this.rawJobPostingContact({
       countryCode, postalCode, municipality, addressLine, streetName,
     }));
@@ -376,6 +386,10 @@ const PlatsbankenVacancy = ({
     }
     if (fails(recruiterEmail, o => o.isString().isEmail())) {
       throw new Error(`recruiterName is required and should be an email address, received "${recruiterEmail}".`);
+    }
+
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
     this.ref.JobPositionPosting.push(
