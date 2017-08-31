@@ -299,6 +299,41 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <StartDate><Date>
+  * Start date for publishing.
+  * Can be set to sometime in the future.
+  * If empty/not present, current date is used.
+  *
+  * Format: yyyy-mm-dd
+  */
+
+  /*
+  * HRXML 0.99
+  * <EndDate><Date>
+  * Last date for publishing the job position on the job board.
+  *
+  * Format: yyyy-mm-dd
+  */
+
+  /*
+  * HRXML 0.99
+  * <FormattedName>
+  * Recommended but not required.
+  * Name of recruiter who registers the Job Position. Combination of
+  * Given name and Family Name
+  * This information is NOT published on the job board
+  *
+  * GivenName and FamilyName can be used instead. We're not, and it is not
+  * imiplemented here.
+  */
+
+  /*
+  * HRXML 0.99
+  * <E-mail>
+  */
+
   rawPostDetail: ({
     startDate,
     endDate,
@@ -323,6 +358,26 @@ const PlatsbankenVacancy = ({
     ],
   }),
   postDetail({ startDate, endDate, recruiterName, recruiterEmail } = {}) {
+    if (fails(startDate, o =>
+      o.isString()
+        .isISO8601()
+        .isLength({ min: 10, max: 10 }))) {
+      throw new Error(`startDate must be a 10 character date, yyyy-mm-dd.`);
+    }
+    if (fails(endDate, o =>
+      o.isString()
+        .isISO8601()
+        .isLength({ min: 10, max: 10 })
+        .required())) {
+      throw new Error(`endDate is required and must be a 10 character date, yyyy-mm-dd.`);
+    }
+    if (fails(recruiterName, o => o.isString().required())) {
+      throw new Error(`recruiterName is required and should be a string.`);
+    }
+    if (fails(recruiterEmail, o => o.isString().isEmail())) {
+      throw new Error(`recruiterName is required and should be an email address, received "${recruiterEmail}".`);
+    }
+
     this.ref.JobPositionPosting.push(
       this.rawPostDetail({ startDate, endDate, recruiterName, recruiterEmail }),
     );
