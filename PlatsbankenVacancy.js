@@ -149,16 +149,16 @@ const PlatsbankenVacancy = ({
   * Landskod-HiringOrgId-Valfri1-Valfri2
   */
   rawJobPositionPosting: ({
-    status,
     id: JobPositionPostingId,
+    status,
   } = { status: 'active' }) => ({
     JobPositionPosting: [{ _attr: { status } }, { JobPositionPostingId }],
   }),
-  jobPositionPosting({ status = 'active', id } = { status: 'active' }) {
+  jobPositionPosting({ id, status = 'active' } = { status: 'active' }) {
     if (fails(status, isActiveInactive)) {
       throw new Error(`Status must be "active" or "inactive", "${status}" received`);
     }
-    this.ref.Payload.push(this.rawJobPositionPosting({ status, id }));
+    this.ref.Payload.push(this.rawJobPositionPosting({ id, status }));
 
     this.ref.JobPositionPosting = this.ref.Payload[this.ref.Payload.length - 1].JobPositionPosting;
 
@@ -264,31 +264,31 @@ const PlatsbankenVacancy = ({
     if (fails(countryCode, isRequired)) {
       throw new Error(`countryCode is required.`);
     }
-    if (fails(countryCode, o => o.isLength({ min: 2, max: 2 }))) {
+    if (fails(countryCode, o => o.isString().isLength({ min: 2, max: 2 }))) {
       throw new Error(`countryCode must be 2 characters.`);
     }
     if (fails(postalCode, isRequired)) {
       throw new Error(`postalcode is required.`);
     }
-    if (fails(postalCode, o => o.isLength({ min: 5, max: 5 }))) {
+    if (fails(postalCode, o => o.isString().isLength({ min: 5, max: 5 }))) {
       throw new Error(`postalCode must be 5 characters.`);
     }
     if (fails(municipality, isRequired)) {
       throw new Error(`municipality is required.`);
     }
-    if (fails(municipality, o => o.isLength({ min: 0, max: 50 }))) {
+    if (fails(municipality, o => o.isString().isLength({ min: 0, max: 50 }))) {
       throw new Error(`municipality must be less than 50 characters.`);
     }
     if (fails(addressLine, isRequired)) {
       throw new Error(`addressLine is required.`);
     }
-    if (fails(addressLine, o => o.isLength({ min: 0, max: 50 }))) {
+    if (fails(addressLine, o => o.isString().isLength({ min: 0, max: 50 }))) {
       throw new Error(`addressLine must be less than 50 characters.`);
     }
     if (fails(streetName, isRequired)) {
       throw new Error(`streetName is required.`);
     }
-    if (fails(streetName, o => o.isLength({ min: 0, max: 50 }))) {
+    if (fails(streetName, o => o.isString().isLength({ min: 0, max: 50 }))) {
       throw new Error(`streetName must be less than 50 characters.`);
     }
 

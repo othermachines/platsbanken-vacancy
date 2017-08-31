@@ -28,7 +28,7 @@ try {
     .transaction({ id: 'ID HERE' })
     .jobPositionPosting({ status: 'active', id: 1 })
     .hiringOrg({ name: 'IES', id: 'IES-HIRING-ORG-ID', url: 'http://example.org' })
-    .jobPostingContact({ countryCode: 'SE', postalCode: 'POSTAL CODE', municipality: 'MUNI', addressLine: 'ADDRESS', streetName: 'STREET' });
+    .jobPostingContact({ countryCode: 'SE', postalCode: 'POSTL', municipality: 'MUNI', addressLine: 'ADDRESS', streetName: 'STREET' });
 } catch (err) {
   console.log(err);
   process.exit(1);
