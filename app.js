@@ -59,7 +59,7 @@ try {
     .jobPositionPurpose({
       purpose: 'JOB PURPOSE',
     })
-    .postalAddress({
+    .jobPositionLocation({
       countryCode: 'SE',
       postalCode: '11356',
       municipality: '0180',

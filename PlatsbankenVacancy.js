@@ -89,7 +89,7 @@ const PlatsbankenVacancy = ({
   * Ex: emailaddress@domain.com
   * Note: this is an element attribute.
   */
-  rawSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
+  jsonSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
   sender({ id, email } = {}) {
     if (fails(id, isPosInt)) {
       throw new Error(`id must be a positive integer, "${id}" received`);
@@ -97,7 +97,7 @@ const PlatsbankenVacancy = ({
     if (fails(email, isEmail)) {
       throw new Error(`email must be an email address, "${email}" received`);
     }
-    this.doc.Envelope.push(this.rawSender({ id, email }));
+    this.doc.Envelope.push(this.jsonSender({ id, email }));
     return this;
   },
 
@@ -116,7 +116,7 @@ const PlatsbankenVacancy = ({
   *  is a UUID/GUID. (Globally unique identifier), will be shown in the
   *  confirm email for submitted files.
   */
-  rawTransaction: ({ id: TransactId } = {}) => {
+  jsonTransaction: ({ id: TransactId } = {}) => {
     const _attr = { timeStamp: '2017-08-20T18:40:49Z' };
     return { TransactInfo: [{ _attr }, { TransactId }] };
   },
@@ -124,7 +124,7 @@ const PlatsbankenVacancy = ({
     if (fails(id, isRequired)) {
       throw new Error(`A transaction id is required.`);
     }
-    this.doc.Envelope.push(this.rawTransaction({ id }));
+    this.doc.Envelope.push(this.jsonTransaction({ id }));
 
     // one transaction can contain many packets
     // but each transaction must have at least one
@@ -140,14 +140,14 @@ const PlatsbankenVacancy = ({
   * each packet. This should be a counter, starting at 1, and is used
   * for traceability.
   */
-  rawPacket: ({ id = 1 } = { id: 1 }) => ({
+  jsonPacket: ({ id = 1 } = { id: 1 }) => ({
     Packet: [{ PacketInfo: [{ PacketId: id }] }, { Payload: [] }],
   }),
   packet() {
     this.packetCount = this.packetCount + 1;
 
     this.ref.Envelope = this.doc.Envelope;
-    this.ref.Envelope.push(this.rawPacket(this.packetCount));
+    this.ref.Envelope.push(this.jsonPacket(this.packetCount));
 
     this.makeRef({
       obj: this.ref,
@@ -179,7 +179,7 @@ const PlatsbankenVacancy = ({
   * This is a common identifier for this particular job position posting.
   * Landskod-HiringOrgId-Valfri1-Valfri2
   */
-  rawJobPositionPosting: ({
+  jsonJobPositionPosting: ({
     id: JobPositionPostingId,
     status,
   } = { status: 'active' }) => ({
@@ -194,7 +194,7 @@ const PlatsbankenVacancy = ({
       throw new Error('JobPositionPosting must be attached to a Payload element. Did you call transaction()?');
     }
 
-    this.ref.Payload.push(this.rawJobPositionPosting({ id, status }));
+    this.ref.Payload.push(this.jsonJobPositionPosting({ id, status }));
 
     this.makeRef({
       obj: this.ref,
@@ -219,7 +219,7 @@ const PlatsbankenVacancy = ({
   * country code (numerical) and Swedish organisation number
   */
 
-  rawHiringOrg: ({
+  jsonHiringOrg: ({
     name: HiringOrgName,
     id: HiringOrgId,
     url: Website,
@@ -241,7 +241,7 @@ const PlatsbankenVacancy = ({
       throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
-    this.ref.JobPositionPosting.push(this.rawHiringOrg({ name, id, url }));
+    this.ref.JobPositionPosting.push(this.jsonHiringOrg({ name, id, url }));
 
     this.makeRef({
       obj: this.ref,
@@ -296,18 +296,23 @@ const PlatsbankenVacancy = ({
   * StreetName currently is.
   */
 
-  rawHiringOrgContact: ({
+  jsonPostalAddress: ({
     countryCode: CountryCode,
     postalCode: PostalCode,
     municipality: Municipality,
     addressLine: AddressLine,
     streetName: StreetName,
   } = {}) => ({
-    Contact: [
-      { PostalAddress: [{ CountryCode }, { PostalCode }, { Municipality }] },
+    PostalAddress: [
+      { CountryCode }, { PostalCode }, { Municipality },
       { DeliveryAddress: [{ AddressLine }, { StreetName }] },
     ],
   }),
+
+  jsonHiringOrgContact: ({ postalAddress: PostalAddress } = {}) => ({
+    Contact: [PostalAddress],
+  }),
+
   hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
     if (fails(countryCode, o =>
       o.isString()
@@ -343,10 +348,11 @@ const PlatsbankenVacancy = ({
     if (!this.ref.HiringOrg) {
       throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
     }
-
-    this.ref.HiringOrg.push(this.rawHiringOrgContact({
+    const postalAddress = this.jsonPostalAddress({
       countryCode, postalCode, municipality, addressLine, streetName,
-    }));
+    });
+
+    this.ref.HiringOrg.push(this.jsonHiringOrgContact({ postalAddress }));
 
     return this;
   },
@@ -386,7 +392,7 @@ const PlatsbankenVacancy = ({
   * <E-mail>
   */
 
-  rawPostDetail: ({
+  jsonPostDetail: ({
     startDate,
     endDate,
     recruiterName,
@@ -435,13 +441,13 @@ const PlatsbankenVacancy = ({
     }
 
     this.ref.JobPositionPosting.push(
-      this.rawPostDetail({ startDate, endDate, recruiterName, recruiterEmail }),
+      this.jsonPostDetail({ startDate, endDate, recruiterName, recruiterEmail }),
     );
 
     return this;
   },
 
-  rawJobPositionInformation: () => ({
+  jsonJobPositionInformation: () => ({
     JobPositionInformation: [],
   }),
   jobPositionInformation() {
@@ -449,7 +455,7 @@ const PlatsbankenVacancy = ({
       throw new Error('JobPositionInformation must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
-    this.ref.JobPositionPosting.push(this.rawJobPositionInformation());
+    this.ref.JobPositionPosting.push(this.jsonJobPositionInformation());
 
     this.makeRef({
       obj: this.ref,
@@ -466,7 +472,7 @@ const PlatsbankenVacancy = ({
   * We recommend that you include the title of the occupation in the headline.
   */
 
-  rawJobPositionTitle: ({ title: JobPositionTitle } = {}) => ({ JobPositionTitle }),
+  jsonJobPositionTitle: ({ title: JobPositionTitle } = {}) => ({ JobPositionTitle }),
   jobPositionTitle({ title } = {}) {
     if (fails(title, isRequired)) {
       throw new Error(`A job title is required.`);
@@ -483,7 +489,7 @@ const PlatsbankenVacancy = ({
     if (!this.ref.JobPositionInformation) {
       this.jobPositionInformation();
     }
-    this.ref.JobPositionInformation.push(this.rawJobPositionTitle({ title }));
+    this.ref.JobPositionInformation.push(this.jsonJobPositionTitle({ title }));
 
     return this;
   },
@@ -493,13 +499,13 @@ const PlatsbankenVacancy = ({
   * Container element only. Should never need to call this directly
   */
 
-  rawJobPositionDescription: () => ({ JobPositionDescription: [] }),
+  jsonJobPositionDescription: () => ({ JobPositionDescription: [] }),
   jobPositionDescription() {
     // make sure we have the required parent element
     if (!this.ref.JobPositionInformation) {
       this.jobPositionInformation();
     }
-    this.ref.JobPositionInformation.push(this.rawJobPositionDescription());
+    this.ref.JobPositionInformation.push(this.jsonJobPositionDescription());
 
     this.makeRef({
       obj: this.ref,
@@ -517,7 +523,7 @@ const PlatsbankenVacancy = ({
   * Published in the text body of the advert.
   */
 
-  rawJobPositionPurpose: ({ purpose: JobPositionPurpose } = {}) => ({
+  jsonJobPositionPurpose: ({ purpose: JobPositionPurpose } = {}) => ({
     JobPositionPurpose,
   }),
   jobPositionPurpose({ purpose } = {}) {
@@ -528,46 +534,39 @@ const PlatsbankenVacancy = ({
     if (!this.ref.JobPositionDescription) {
       this.jobPositionDescription();
     }
-    this.ref.JobPositionDescription.push(this.rawJobPositionPurpose({ purpose }));
+    this.ref.JobPositionDescription.push(this.jsonJobPositionPurpose({ purpose }));
 
     return this;
   },
 
-  /*
-  * TODO: refactor PostalAddress, DeliverAddress, LocationSummary
-  * cf. HiringOrg, above, is the same
-  */
-
-  rawPostalAddress: ({
-    countryCode: CountryCode,
-    postalcode: PostalCode,
+  jsonJobPositionLocation: ({
     municipality: Municipality,
-    addressLine: AddressLine,
-    streetName: StreetName,
+    countryCode: CountryCode,
+    postalAddress: PostalAddress,
   } = {}) => ({
-    JobPositionLocation: [{
-      PostalAddress: [
-        { CountryCode },
-        { PostalCode },
-        { Municipality },
-        { DeliveryAddress: [{ AddressLine }, { StreetName }] },
-        { LocationSummary: [{ Municipality }, { CountryCode }] },
-      ],
-    }],
+    JobPositionLocation: [
+      { PostalAddress },
+      { LocationSummary: [{ Municipality }, { CountryCode }] },
+    ],
   }),
-  postalAddress({
+  jobPositionLocation({
     countryCode,
     postalCode,
     municipality,
     addressLine,
     streetName,
   } = {}) {
-    this.ref.JobPositionInformation.push(this.rawPostalAddress({
+    const postalAddress = this.jsonPostalAddress({
       countryCode,
       postalCode,
       municipality,
       addressLine,
       streetName,
+    });
+    this.ref.JobPositionInformation.push(this.jsonJobPositionLocation({
+      municipality,
+      countryCode,
+      postalAddress,
     }));
 
     return this;
