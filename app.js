@@ -36,16 +36,16 @@ try {
       status: 'active',
     })
     .hiringOrg({
-      name: 'IES',
-      id: 'IES-HIRING-ORG-ID',
+      name: 'ORG NAME',
+      id: '46-XXYYZZ-XXYY-1',
       url: 'http://example.org',
     })
     .jobPostingContact({
       countryCode: 'SE',
-      postalCode: 'POSTL',
-      municipality: 'MUNI',
-      addressLine: 'ADDRESS',
-      streetName: 'STREET',
+      postalCode: '11356',
+      municipality: '0180',
+      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+      streetName: 'Birger Jarlsgatan 58',
     })
     .postDetail({
       startDate: '2018-09-01',
@@ -55,6 +55,16 @@ try {
     })
     .jobPositionTitle({
       title: 'JOB TITLE',
+    })
+    .jobPositionPurpose({
+      purpose: 'JOB PURPOSE',
+    })
+    .postalAddress({
+      countryCode: 'SE',
+      postalCode: '11356',
+      municipality: '0180',
+      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+      streetName: 'Birger Jarlsgatan 58',
     });
 } catch (err) {
   console.log(err);

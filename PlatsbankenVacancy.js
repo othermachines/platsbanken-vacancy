@@ -10,6 +10,7 @@ const Validator = require('better-validator');
 
 /* validators */
 isRequired = o => o.required();
+isString = o => o.isString().required();
 isPosInt = o => o.isNumber().integer().isPositive().required();
 isEmail = o => o.isString().isEmail().required();
 isActiveInactive = o => o.isString().isIn(['active', 'inactve']).required();
@@ -54,6 +55,18 @@ const PlatsbankenVacancy = ({
   //   this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
   // to manage references is a pain
   makeRef: ({ obj, target, parent } = {}) => {
+    if (fails(obj, isRequired)) {
+      throw new Error('"obj" is required');
+    }
+    if (fails(target, isString)) {
+      throw new Error(`"target" is required and must be a string, "${target}" received.`);
+    }
+    if (fails(parent, isString)) {
+      throw new Error(`"parent" is required and must be a string, "${parent}" received.`);
+    }
+    if (typeof obj[parent] === 'undefined') {
+      throw new Error(`Parent element "${target}" does not exist as a reference key.`);
+    }
     if (obj[target]) {
       throw new Error(`"${target}" already exists as a reference key.`);
     }
@@ -474,6 +487,92 @@ const PlatsbankenVacancy = ({
 
     return this;
   },
+
+  /*
+  * <JobPositionDescription>
+  * Container element only. Should never need to call this directly
+  */
+
+  rawJobPositionDescription: () => ({ JobPositionDescription: [] }),
+  jobPositionDescription() {
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    this.ref.JobPositionInformation.push(this.rawJobPositionDescription());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'JobPositionDescription',
+      parent: 'JobPositionInformation',
+    });
+
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
+  * <JobPositionPurpose>
+  * Description of the purpose of the job position.
+  * Published in the text body of the advert.
+  */
+
+  rawJobPositionPurpose: ({ purpose: JobPositionPurpose } = {}) => ({
+    JobPositionPurpose,
+  }),
+  jobPositionPurpose({ purpose } = {}) {
+    if (fails(purpose, isString)) {
+      throw new Error(`"purpose" is required and must be a string, "${purpose}" received.`);
+    }
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionDescription) {
+      this.jobPositionDescription();
+    }
+    this.ref.JobPositionDescription.push(this.rawJobPositionPurpose({ purpose }));
+
+    return this;
+  },
+
+  /*
+  * TODO: refactor PostalAddress, DeliverAddress, LocationSummary
+  * cf. HiringOrg, above, is the same
+  */
+
+  rawPostalAddress: ({
+    countryCode: CountryCode,
+    postalcode: PostalCode,
+    municipality: Municipality,
+    addressLine: AddressLine,
+    streetName: StreetName,
+  } = {}) => ({
+    JobPositionLocation: [{
+      PostalAddress: [
+        { CountryCode },
+        { PostalCode },
+        { Municipality },
+        { DeliveryAddress: [{ AddressLine }, { StreetName }] },
+        { LocationSummary: [{ Municipality }, { CountryCode }] },
+      ],
+    }],
+  }),
+  postalAddress({
+    countryCode,
+    postalCode,
+    municipality,
+    addressLine,
+    streetName,
+  } = {}) {
+    this.ref.JobPositionInformation.push(this.rawPostalAddress({
+      countryCode,
+      postalCode,
+      municipality,
+      addressLine,
+      streetName,
+    }));
+
+    return this;
+  },
+
 
 });
 
