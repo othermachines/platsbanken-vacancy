@@ -40,7 +40,7 @@ try {
       id: '46-XXYYZZ-XXYY-1',
       url: 'http://example.org',
     })
-    .jobPostingContact({
+    .hiringOrgContact({
       countryCode: 'SE',
       postalCode: '11356',
       municipality: '0180',

@@ -296,7 +296,7 @@ const PlatsbankenVacancy = ({
   * StreetName currently is.
   */
 
-  rawJobPostingContact: ({
+  rawHiringOrgContact: ({
     countryCode: CountryCode,
     postalCode: PostalCode,
     municipality: Municipality,
@@ -308,7 +308,7 @@ const PlatsbankenVacancy = ({
       { DeliveryAddress: [{ AddressLine }, { StreetName }] },
     ],
   }),
-  jobPostingContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
+  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
     if (fails(countryCode, o =>
       o.isString()
         .isLength({ min: 2, max: 2 })
@@ -344,7 +344,7 @@ const PlatsbankenVacancy = ({
       throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
     }
 
-    this.ref.HiringOrg.push(this.rawJobPostingContact({
+    this.ref.HiringOrg.push(this.rawHiringOrgContact({
       countryCode, postalCode, municipality, addressLine, streetName,
     }));
 
