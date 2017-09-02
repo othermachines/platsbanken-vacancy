@@ -539,6 +539,76 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <PostalAddress>
+  * Appears under the heading 'Arbetsgivare (Postadress/Besöksadress)' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <CountryCode>
+  * Country codes according to ISO 31661-1 alpha-2. (SE for Sweden.)
+  */
+
+  /*
+  * HRXML 0.99
+  * <PostalCode>
+  * The postal code for the delivery address. Must be a valid postcode without spaces.
+  */
+
+  /*
+  * HRXML 0.99
+  * <PostAddress><Municipality>
+  * Name of town/city for the delivery address
+  *
+  * Note: Municipality is defined everywhere else as a code.
+  * We are using that definition here for the moment. If this is
+  * not correct, we will need to differentiate between municipality and
+  * municipality code.
+  *
+  * See also comment below for <LocationSummary><Municipality>.
+  */
+
+  /*
+  * HRXML 0.99
+  * <AddressLine>
+  * Element can not be repeated.
+  * The workplaces' visiting address.
+  * Will be shown under heading 'Besöksadress' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <StreetName>
+  * Street name for the delivery address of the workplace.
+  * (Either this or PostOfficeBox must be specified.)
+  *
+  * Note that PostOfficeBox is not implemented here. To make that a valid
+  * option, check whether StreetName or PostOfficeBox is supplied and
+  * construct appropriately. PostOfficeBox would go in the same place
+  * StreetName currently is.
+  */
+
+  /*
+  * <Recipient><OrganizationName> is defined in the docs here. It
+  * is optional, and not implemented here.
+  */
+
+  /*
+  * HRXML 0.99
+  * <LocationSummary><Municipality>
+  * A Swedish municipality code, used to make the job position searchable by location.
+  * If Job location is in another country than Sweden then this should be set to 9999.
+  */
+
+  /*
+  * HRXML 0.99
+  * <CountryCode>
+  * Country codes according to ISO 31661-1 alpha-2.
+  * (SE for Sweden.)
+  */
+
   jsonJobPositionLocation: ({
     municipality: Municipality,
     countryCode: CountryCode,
