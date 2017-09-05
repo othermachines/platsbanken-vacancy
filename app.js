@@ -65,6 +65,13 @@ try {
       municipality: '0180',
       addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
       streetName: 'Birger Jarlsgatan 58',
+    })
+    .classification({
+      scheduleType: 'part',
+      duration: 'temporary',
+      scheduleSummaryText: 'Schedule Summary',
+      durationSummaryText: 'Duration Summary',
+      termLength: 2,
     });
 } catch (err) {
   console.log(err);

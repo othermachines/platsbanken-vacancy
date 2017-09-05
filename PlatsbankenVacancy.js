@@ -309,11 +309,7 @@ const PlatsbankenVacancy = ({
     ],
   }),
 
-  jsonHiringOrgContact: ({ postalAddress: PostalAddress } = {}) => ({
-    Contact: [PostalAddress],
-  }),
-
-  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
+  validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
     if (fails(countryCode, o =>
       o.isString()
         .isLength({ min: 2, max: 2 })
@@ -344,6 +340,15 @@ const PlatsbankenVacancy = ({
         .required())) {
       throw new Error(`streetName must be less than 50 characters.`);
     }
+  },
+
+  jsonHiringOrgContact: ({ postalAddress: PostalAddress } = {}) => ({
+    Contact: [PostalAddress],
+  }),
+
+  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
+    // throws error on failure
+    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
 
     if (!this.ref.HiringOrg) {
       throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
@@ -615,7 +620,7 @@ const PlatsbankenVacancy = ({
     postalAddress: PostalAddress,
   } = {}) => ({
     JobPositionLocation: [
-      { PostalAddress },
+      PostalAddress,
       { LocationSummary: [{ Municipality }, { CountryCode }] },
     ],
   }),
@@ -626,6 +631,14 @@ const PlatsbankenVacancy = ({
     addressLine,
     streetName,
   } = {}) {
+    // throws error on failure
+    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
+
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionDescription) {
+      this.jobPositionDescription();
+    }
+
     const postalAddress = this.jsonPostalAddress({
       countryCode,
       postalCode,
@@ -633,13 +646,75 @@ const PlatsbankenVacancy = ({
       addressLine,
       streetName,
     });
-    this.ref.JobPositionInformation.push(this.jsonJobPositionLocation({
+    this.ref.JobPositionDescription.push(this.jsonJobPositionLocation({
       municipality,
       countryCode,
       postalAddress,
     }));
 
     return this;
+  },
+
+  jsonClassification: ({
+    scheduleType,
+    duration,
+    scheduleSummaryText,
+    durationSummaryText,
+  } = {}) => {
+    let scheduleObj = {};
+
+    if (scheduleType === 'full') {
+      scheduleObj = { Schedule: [{ FullTime: '' }] };
+    } else if (scheduleType === 'part') {
+      scheduleObj = { Schedule: [{ PartTime: '' }] };
+    }
+    scheduleObj.Schedule.push({ SummaryText: scheduleSummaryText });
+
+    let durationObj = {};
+    if (duration === 'regular') {
+      durationObj = { Duration: [{ Regular: '' }] };
+    } else if (duration === 'temporary') {
+      durationObj = { Duration: [{ Temporary: '' }] };
+    }
+    durationObj.Duration.push({ SummaryText: durationSummaryText });
+
+    return { Classification: [scheduleObj, durationObj] };
+  },
+
+  classification({
+    scheduleType,
+    duration,
+    scheduleSummaryText,
+    durationSummaryText,
+    termLength,
+  } = {
+      scheduleType: 'full',
+      duration: 'regular',
+    }) {
+    if (fails(scheduleType, o => o.isEqual('full').required()) &&
+      fails(scheduleType, o => o.isEqual('part').required())) {
+      throw new Error(`scheduleType is required and must be "full" or "part", "${scheduleType}" received`);
+    }
+
+    if (fails(duration, o => o.isEqual('regular').required()) &&
+      fails(duration, o => o.isEqual('temporary').required())) {
+      throw new Error(`duration is required and must be "regular" or "temporary", "${scheduleType}" received`);
+    }
+
+    // could not find an elegant way of performing an 'inArray' check
+    // using better-validator
+    const allowedTerms = [2, 3, 4, 7, 8];
+
+    if (duration === 'temporary' && !allowedTerms.includes(termLength)) {
+      throw new Error(`termLength is required if position is temporary, and must be one of 2, 3, 4, 7 or 8, received "${termLength}".`);
+    }
+
+    this.ref.JobPositionDescription.push(this.jsonClassification({
+      scheduleType,
+      duration,
+      scheduleSummaryText,
+      durationSummaryText,
+    }));
   },
 
 
