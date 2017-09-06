@@ -32,7 +32,7 @@ try {
       id: 'ID HERE',
     })
     .jobPositionPosting({
-      id: 1,
+      id: '123-456',
       status: 'active',
     })
     .hiringOrg({
@@ -75,6 +75,11 @@ try {
     });
 } catch (err) {
   console.log(err);
+  // console.log(err.details);
+  console.log('-----');
+  console.log(err.details[0].context);
+  console.log('-----');
+  console.log(err.annotate());
   process.exit(1);
 }
 

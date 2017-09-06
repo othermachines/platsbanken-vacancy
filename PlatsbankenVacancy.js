@@ -5,32 +5,7 @@
 */
 
 const xml = require('xml');
-
-const Validator = require('better-validator');
-
-/* validators */
-isRequired = o => o.required();
-isString = o => o.isString().required();
-isPosInt = o => o.isNumber().integer().isPositive().required();
-isEmail = o => o.isString().isEmail().required();
-isActiveInactive = o => o.isString().isIn(['active', 'inactve']).required();
-
-/*
-* A bit of sugar to make better-validator more concise.
-*
-* rather than:
-*   const valitador = new Validator();
-*   validator(123).isNumber();
-*   const errs = validator.run();
-*   if (errs.length) { ... }
-*
-* we can do
-*   if (fails(123, o => o.isNumber()) { ... }
-*/
-const fails = (o, fn) => {
-  const validator = new Validator();
-  return validator(o, fn).length;
-};
+const Joi = require('joi');
 
 const PlatsbankenVacancy = ({
   xmlns = 'http://api.arbetsformedlingen.se/ledigtarbete',
@@ -55,21 +30,15 @@ const PlatsbankenVacancy = ({
   //   this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
   // to manage references is a pain
   makeRef: ({ obj, target, parent } = {}) => {
-    if (fails(obj, isRequired)) {
-      throw new Error('"obj" is required');
-    }
-    if (fails(target, isString)) {
-      throw new Error(`"target" is required and must be a string, "${target}" received.`);
-    }
-    if (fails(parent, isString)) {
-      throw new Error(`"parent" is required and must be a string, "${parent}" received.`);
-    }
-    if (typeof obj[parent] === 'undefined') {
-      throw new Error(`Parent element "${target}" does not exist as a reference key.`);
-    }
-    if (obj[target]) {
-      throw new Error(`"${target}" already exists as a reference key.`);
-    }
+    Joi.assert({ obj, target, parent }, {
+      obj: Joi.object().required(),
+      target: Joi.string().required(),
+      parent: Joi.string().required(),
+    });
+
+    Joi.assert(obj[parent], Joi.required(), `Parent element "${target}" does not exist as a reference key.`);
+    Joi.assert(obj[target], Joi.forbidden(), `"${target}" already exists as a reference key.`);
+
     obj[target] = obj[parent][obj[parent].length - 1][target];
   },
 
@@ -91,12 +60,11 @@ const PlatsbankenVacancy = ({
   */
   jsonSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
   sender({ id, email } = {}) {
-    if (fails(id, isPosInt)) {
-      throw new Error(`id must be a positive integer, "${id}" received`);
-    }
-    if (fails(email, isEmail)) {
-      throw new Error(`email must be an email address, "${email}" received`);
-    }
+    Joi.assert({ id, email }, {
+      id: Joi.number().integer().positive(),
+      email: Joi.string().email(),
+    });
+
     this.doc.Envelope.push(this.jsonSender({ id, email }));
     return this;
   },
@@ -120,10 +88,9 @@ const PlatsbankenVacancy = ({
     const _attr = { timeStamp: '2017-08-20T18:40:49Z' };
     return { TransactInfo: [{ _attr }, { TransactId }] };
   },
-  transaction(id) {
-    if (fails(id, isRequired)) {
-      throw new Error(`A transaction id is required.`);
-    }
+  transaction({ id } = {}) {
+    Joi.assert({ id }, { id: Joi.string().required() });
+
     this.doc.Envelope.push(this.jsonTransaction({ id }));
 
     // one transaction can contain many packets
@@ -186,9 +153,10 @@ const PlatsbankenVacancy = ({
     JobPositionPosting: [{ _attr: { status } }, { JobPositionPostingId }],
   }),
   jobPositionPosting({ id, status = 'active' } = { status: 'active' }) {
-    if (fails(status, isActiveInactive)) {
-      throw new Error(`Status must be "active" or "inactive", "${status}" received`);
-    }
+    Joi.assert({ id, status }, {
+      id: Joi.string().max(50).required(),
+      status: Joi.valid(['active', 'inactive']),
+    });
 
     if (!this.ref.Payload) {
       throw new Error('JobPositionPosting must be attached to a Payload element. Did you call transaction()?');
@@ -227,15 +195,11 @@ const PlatsbankenVacancy = ({
     HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { Website }],
   }),
   hiringOrg({ name, id, url } = {}) {
-    if (fails(name, isRequired)) {
-      throw new Error(`Organization name is required.`);
-    }
-    if (fails(id, isRequired)) {
-      throw new Error(`Organziation id is required.`);
-    }
-    if (fails(url, o => o.isString().isURL())) {
-      throw new Error(`url (if used) should be a fully qualified URL, "${url}" recieved.`);
-    }
+    Joi.assert({ name, id, url }, {
+      name: Joi.string().required(),
+      id: Joi.string().required(),
+      url: Joi.string().optional(),
+    });
 
     if (!this.ref.JobPositionPosting) {
       throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
@@ -310,36 +274,13 @@ const PlatsbankenVacancy = ({
   }),
 
   validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
-    if (fails(countryCode, o =>
-      o.isString()
-        .isLength({ min: 2, max: 2 })
-        .required())) {
-      throw new Error(`countryCode is required and must be 2 characters.`);
-    }
-    if (fails(postalCode, o =>
-      o.isString()
-        .isLength({ min: 5, max: 5 })
-        .required())) {
-      throw new Error(`postalCode is required and must be 5 characters.`);
-    }
-    if (fails(municipality, o =>
-      o.isString()
-        .isLength({ min: 0, max: 50 })
-        .required())) {
-      throw new Error(`municipality is required and must be less than 50 characters.`);
-    }
-    if (fails(addressLine, o =>
-      o.isString()
-        .isLength({ min: 0, max: 50 })
-        .required())) {
-      throw new Error(`addressLine must be less than 50 characters.`);
-    }
-    if (fails(streetName, o =>
-      o.isString()
-        .isLength({ min: 0, max: 50 })
-        .required())) {
-      throw new Error(`streetName must be less than 50 characters.`);
-    }
+    Joi.assert({ countryCode, postalCode, municipality, addressLine, streetName }, {
+      countryCode: Joi.string().length(2).required(),
+      postalCode: Joi.string().length(5).required(),
+      municipality: Joi.string().max(50).required(),
+      addressLine: Joi.string().max(50).required(),
+      streetName: Joi.string().max(50).required(),
+    });
   },
 
   jsonHiringOrgContact: ({ postalAddress: PostalAddress } = {}) => ({
@@ -421,25 +362,12 @@ const PlatsbankenVacancy = ({
     ],
   }),
   postDetail({ startDate, endDate, recruiterName, recruiterEmail } = {}) {
-    if (fails(startDate, o =>
-      o.isString()
-        .isISO8601()
-        .isLength({ min: 10, max: 10 }))) {
-      throw new Error(`startDate must be a 10 character date, yyyy-mm-dd.`);
-    }
-    if (fails(endDate, o =>
-      o.isString()
-        .isISO8601()
-        .isLength({ min: 10, max: 10 })
-        .required())) {
-      throw new Error(`endDate is required and must be a 10 character date, yyyy-mm-dd.`);
-    }
-    if (fails(recruiterName, o => o.isString().required())) {
-      throw new Error(`recruiterName is required and should be a string.`);
-    }
-    if (fails(recruiterEmail, o => o.isString().isEmail())) {
-      throw new Error(`recruiterName is required and should be an email address, received "${recruiterEmail}".`);
-    }
+    Joi.assert({ startDate, endDate, recruiterName, recruiterEmail }, {
+      startDate: Joi.string().isoDate().required(),
+      endDate: Joi.string().isoDate().required(),
+      recruiterName: Joi.string().max(100).required(),
+      recruiterEmail: Joi.string().email(),
+    });
 
     if (!this.ref.JobPositionPosting) {
       throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
@@ -479,16 +407,9 @@ const PlatsbankenVacancy = ({
 
   jsonJobPositionTitle: ({ title: JobPositionTitle } = {}) => ({ JobPositionTitle }),
   jobPositionTitle({ title } = {}) {
-    if (fails(title, isRequired)) {
-      throw new Error(`A job title is required.`);
-    }
-
-    if (fails(title, o =>
-      o.isString()
-        .isLength({ min: 0, max: 75 })
-        .required())) {
-      throw new Error(`A job title is required and must be less than 75 characters, received "${title}"`);
-    }
+    Joi.assert({ title }, {
+      title: Joi.string().max(75).required(),
+    });
 
     // make sure we have the required parent element
     if (!this.ref.JobPositionInformation) {
@@ -532,9 +453,10 @@ const PlatsbankenVacancy = ({
     JobPositionPurpose,
   }),
   jobPositionPurpose({ purpose } = {}) {
-    if (fails(purpose, isString)) {
-      throw new Error(`"purpose" is required and must be a string, "${purpose}" received.`);
-    }
+    Joi.assert({ purpose }, {
+      purpose: Joi.string().required(),
+    });
+
     // make sure we have the required parent element
     if (!this.ref.JobPositionDescription) {
       this.jobPositionDescription();
@@ -687,27 +609,19 @@ const PlatsbankenVacancy = ({
     scheduleSummaryText,
     durationSummaryText,
     termLength,
-  } = {
-      scheduleType: 'full',
-      duration: 'regular',
-    }) {
-    if (fails(scheduleType, o => o.isEqual('full').required()) &&
-      fails(scheduleType, o => o.isEqual('part').required())) {
-      throw new Error(`scheduleType is required and must be "full" or "part", "${scheduleType}" received`);
-    }
-
-    if (fails(duration, o => o.isEqual('regular').required()) &&
-      fails(duration, o => o.isEqual('temporary').required())) {
-      throw new Error(`duration is required and must be "regular" or "temporary", "${scheduleType}" received`);
-    }
-
-    // could not find an elegant way of performing an 'inArray' check
-    // using better-validator
-    const allowedTerms = [2, 3, 4, 7, 8];
-
-    if (duration === 'temporary' && !allowedTerms.includes(termLength)) {
-      throw new Error(`termLength is required if position is temporary, and must be one of 2, 3, 4, 7 or 8, received "${termLength}".`);
-    }
+  } = { scheduleType: 'full', duration: 'regular' }) {
+    Joi.assert({
+      scheduleType,
+      duration,
+      termLength,
+    }, {
+      scheduleType: Joi.string().valid(['full', 'part']).required(),
+      duration: Joi.string().valid(['regular', 'temporary']).required(),
+      termLength: Joi.when('scheduleType', {
+        is: 'part',
+        then: Joi.valid([2, 3, 4, 7, 8]).required(),
+      }).description('Required if part time'),
+    });
 
     this.ref.JobPositionDescription.push(this.jsonClassification({
       scheduleType,
