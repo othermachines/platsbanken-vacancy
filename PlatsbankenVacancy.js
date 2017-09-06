@@ -577,9 +577,68 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <FullTime>
+  * If job position is full time (38 hours per week or more) this element must
+  * be included in the file. No content inside the element is required.
+  */
+
+  /*
+  * HRXML 0.99
+  * <PartTime>
+  * If job position is part time (less than 38 hours per week) this element must
+  * be included in the file. No content inside the element is required.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Schedule><SummaryText>
+  * Information (free text) if position is full time, part time, etc.
+  * E.g.  "part time 50%".
+  * Published under heading 'Arbetstid Varaktighet'.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Regular>
+  * If the job position is permanent this element must be included in the file.
+  */
+
+
+  /*
+  * HRXML 0.99
+  * <Temporary>
+  * If this element is specified, the element Temporary->TermLength must exist.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Temporary><TermLength>
+  * If the job position is temporary this element must be included in the file.
+  *
+  * The element has to contain one of the following codes:
+  * 2: Temporary employment 6 months or longer
+  * 3: Temporary employment 3-6 months
+  * 4: Temporary employment during the summer months (June to August)
+  * 7: Temporary employment 11 days to 3 months
+  * 8: Temporary employment max 10 days
+  *
+  */
+
+  /*
+  * HRXML 0.99
+  * <Duration><SummaryText>
+  * Information (free text) if position is regular or temporary. If a temporary
+  * employment is specified, the dates can be written here.
+  * E.g. 'Visstidsanställning 2012-02-03 till 2012-06-30'.
+  * Published under heading 'Arbetstid Varaktighet'.
+  */
+
   jsonClassification: ({
     scheduleType,
     duration,
+    termLength: TermLength,
     scheduleSummaryText,
     durationSummaryText,
   } = {}) => {
@@ -596,7 +655,11 @@ const PlatsbankenVacancy = ({
     if (duration === 'regular') {
       durationObj = { Duration: [{ Regular: '' }] };
     } else if (duration === 'temporary') {
-      durationObj = { Duration: [{ Temporary: '' }] };
+      durationObj = {
+        Duration: [{
+          Temporary: [{ TermLength }],
+        }],
+      };
     }
     durationObj.Duration.push({ SummaryText: durationSummaryText });
 
@@ -626,6 +689,7 @@ const PlatsbankenVacancy = ({
     this.ref.JobPositionDescription.push(this.jsonClassification({
       scheduleType,
       duration,
+      termLength,
       scheduleSummaryText,
       durationSummaryText,
     }));
