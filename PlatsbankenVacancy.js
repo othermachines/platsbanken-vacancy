@@ -693,8 +693,78 @@ const PlatsbankenVacancy = ({
       scheduleSummaryText,
       durationSummaryText,
     }));
+
+    return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <SalaryMonthly:currency>
+  * Documentations says only "Static value" and "unspecified" for value.
+  * Assuming this will take any string.
+  */
+
+  /*
+  * HRXML 0.99
+  * <SalaryMonthly>
+  * Must contain a numerical value to indicate whether salary is Fixed,
+  * Comission, or Fixed plus Comission. Information is not published but is
+  * used as a search criteria.
+  *
+  * The element has to contain one of the following codes:
+  * 1: Fixed salary
+  * 2: Fixed plus Comission
+  * 3: Comission only
+  */
+
+  /*
+  * HRXML 0.99
+  * <Benefits><P>
+  * Free text for type of benefits; car, housing, insurance package etc.
+  */
+
+  /*
+  * HRXML 0.99
+  * <SummaryText>
+  * Free text for type of remuneration; monthly, weekly, etc.
+  * Published under heading 'Lön'.
+  */
+
+  jsonCompensationDescription: ({
+    currency,
+    salaryType: SalaryMonthly,
+    benefits: P,
+    summary: SummaryText,
+  } = {}) => ({
+    CompensationDescription: [{
+      Pay: [{
+        SalaryMonthly: [{ _attr: { currency } }, { SalaryMonthly }],
+      }],
+    }, {
+      SummaryText,
+    }, {
+      Benefits: [{ P }],
+    }],
+  }),
+
+  compensationDescription({ currency, salaryType, benefits, summary } = {}) {
+    this.ref.JobPositionDescription.push(this.jsonCompensationDescription({
+      currency,
+      salaryType,
+      benefits,
+      summary,
+    }));
+
+    Joi.assert({
+      currency,
+      salaryType,
+    }, {
+      currency: Joi.any().required(),
+      salaryType: Joi.number().valid([1, 2, 3]).required(),
+    });
+
+    return this;
+  },
 
 });
 

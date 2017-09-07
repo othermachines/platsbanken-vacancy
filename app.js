@@ -72,6 +72,12 @@ try {
       scheduleSummaryText: 'Schedule Summary',
       durationSummaryText: 'Duration Summary',
       termLength: 2,
+    })
+    .compensationDescription({
+      currency: 'SEK',
+      salaryType: 1,
+      benefits: 'bennies',
+      summary: 'summary text',
     });
 } catch (err) {
   console.log(err);
