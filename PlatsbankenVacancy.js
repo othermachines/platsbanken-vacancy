@@ -763,6 +763,10 @@ const PlatsbankenVacancy = ({
       salaryType: Joi.number().valid([1, 2, 3]).required(),
     });
 
+    if (benefits.length + summary.length > 255) {
+      throw new Error('Summary text length plus benefits text length must not exceed 255 characters');
+    }
+
     return this;
   },
 
