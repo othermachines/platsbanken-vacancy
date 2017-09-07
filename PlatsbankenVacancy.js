@@ -683,7 +683,7 @@ const PlatsbankenVacancy = ({
       termLength: Joi.when('scheduleType', {
         is: 'part',
         then: Joi.valid([2, 3, 4, 7, 8]).required(),
-      }).description('Required if part time'),
+      }).description('Required if position is temporary'),
     });
 
     this.ref.JobPositionDescription.push(this.jsonClassification({
