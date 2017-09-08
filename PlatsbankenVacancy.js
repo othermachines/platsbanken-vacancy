@@ -770,6 +770,64 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  jsonJobPositionRequirements: () => ({ JobPositionRequirements: [] }),
+  jobPositionRequirements() {
+    this.ref.JobPositionInformation.push(this.jsonJobPositionRequirements());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'JobPositionRequirements',
+      parent: 'JobPositionInformation',
+    });
+    return this;
+  },
+
+  jsonQualificationsRequired: () => ({ QualificationsRequired: [] }),
+
+  qualificationsRequired() {
+    // make sure we have the required parent elements
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    if (!this.ref.JobPositionRequirements) {
+      this.jobPositionRequirements();
+    }
+
+    this.ref.JobPositionRequirements.push(this.jsonQualificationsRequired());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'QualificationsRequired',
+      parent: 'JobPositionRequirements',
+    });
+
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
+  * <QualificationsRequired><P>
+  * Recommended but not required.
+  * Information about the required qualifications. Published in the text body
+  * of the advert.
+  */
+
+  jsonQualificationsRequiredSummary: ({ summary: P } = {}) => ({ P }),
+
+  qualificationsRequiredSummary({ summary } = {}) {
+    // make sure we have the required parent elements
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    if (!this.ref.QualificationsRequired) {
+      this.qualificationsRequired();
+    }
+
+    this.ref.QualificationsRequired.push(this.jsonQualificationsRequiredSummary({ summary }));
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;

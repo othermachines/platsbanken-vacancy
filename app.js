@@ -78,6 +78,9 @@ try {
       salaryType: 1,
       benefits: 'bennies',
       summary: 'summary text',
+    })
+    .qualificationsRequiredSummary({
+      summary: 'Summary of qualifications',
     });
 } catch (err) {
   console.log(err);
