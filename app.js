@@ -94,6 +94,9 @@ try {
     .qualification({
       type: 'equipment',
       description: 'Car',
+    })
+    .qualificationsPreferredSummary({
+      summary: 'PREFERRED QUALIFICATIONS',
     });
 } catch (err) {
   console.log(err);

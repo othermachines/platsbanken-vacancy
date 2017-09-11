@@ -1026,6 +1026,60 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <QualificationsPreferred><P>
+  * Recommended but not required.
+  * Information about the preferred qualifications. Published in the text
+  * body of the advert.
+  */
+
+  jsonQualificationsPreferred: () => ({ QualificationsPreferred: [] }),
+
+  qualificationsPreferred() {
+    // make sure we have the required parent elements
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    if (!this.ref.JobPositionRequirements) {
+      this.jobPositionRequirements();
+    }
+
+    this.ref.JobPositionRequirements.push(this.jsonQualificationsPreferred());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'QualificationsPreferred',
+      parent: 'JobPositionRequirements',
+    });
+
+    return this;
+  },
+
+  jsonQualificationsPreferredSummary: ({ summary: P } = {}) => ({ P }),
+
+  qualificationsPreferredSummary({ summary } = {}) {
+    Joi.assert({
+      summary,
+    }, {
+      summary: Joi.required(),
+    });
+
+    // make sure we have the required parent elements
+    if (!this.ref.JobPositionInformation) {
+      this.jobPositionInformation();
+    }
+    if (!this.ref.QualificationsPreferred) {
+      this.qualificationsPreferred();
+    }
+
+    this.ref.QualificationsPreferred.push(
+      this.jsonQualificationsPreferredSummary({ summary }),
+    );
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;
