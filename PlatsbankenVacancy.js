@@ -828,6 +828,155 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <Qualification>
+  * This element is used to describe either that applicants are required to
+  * have a drivers license, or that they have to have their own car.
+  * The element can be repeated to indicate both.
+  * If ommitted, no such requirements exist for this job position.
+  *
+  * Note that the element does not have a value, only attributes.
+  * Example 1:
+  * <Qualification type="license" description="DriversLicense" category="B,C1,C1E" />
+  * Example 2:
+  * <Qualification type="equipment" description="Car" />
+  *
+  * Alternatively (see <Qualification:type> and <Qualification:experience>, below):
+  * This element is used to describe either that experience is required or not required
+  */
+
+  /*
+  * HRXML 0.99
+  * <Qualification:type>
+  * Describes the type of Qualification. Only two different values are allowed:
+  *    "license" indicates that a drivers licens is required.
+  *    "equipment" indicates that the applicant must have her own car.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Qualification:description>
+  * Attribute is used together with the "type" attribute described above.
+  * If "license" was specified as type, this should be set to "DriversLicense".
+  * If "equipment" was specified as type, this should be set to "Car".
+  */
+
+  /*
+  * HRXML 0.99
+  * <Qualification:category>
+  * This attribute is used to indicate the type of drivers license required.
+  * Thus, it is only required if the description attribute described above is
+  * set to "DriversLicense".
+  */
+
+  /*
+  * HRXML 0.99
+  * <Qualification:type>
+  * Describes the type of Qualification.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Qualification:yearsOfExperience>
+  * This attribute is used to indicate if experience is a requirement.
+  */
+
+  /*
+  * The <Qualification> tag appears to be used for one of three things:
+  *   - indicate that a driver's license is required, and the type,
+  *   - indicate that a car is required,
+  *   - indicate that experience is required.
+  *
+  * Which attributes are required varies based on the qualification being
+  * defined, eg.:
+  *   <Qualification type="experience" yearsOfExperience="1"/>
+  *   <Qualification type="license" description="DriversLicense" category="B,C1"/>
+  *   <Qualification type="equipment" description="Car"/>
+  *
+  * Notes:
+  *   The "experience" type is flagged as being required, while
+  *   the other two are not. The XSDs indicate that this tag is entirely
+  *   optional. This may be enforced at the application level, but is untested.
+  *   Here we are assuming that it is in fact a required element.
+  *
+  *   The XSDs indicate other possible attributes and values for the
+  *   Qualification element. (Values documented in HRXML 0.99 are starred):
+  *   "type" can be one of:
+  *     - skill
+  *     - experience*
+  *     - education
+  *     - license*
+  *     - certification
+  *     - equipment*
+  *     - other
+  *
+  *   Other attributes that may be present (attributes documented in HRXML 0.99
+  *   are starred):
+  *     - description*
+  *     - yearsOfExperience*
+  *     - level
+  *     - interest
+  *     - yearLastUsed
+  *     - source
+  *     - category*
+  *
+  *   Because of this ambiguity, minimal parameter checking is done in order
+  *   to be as permissive as possible, while still checking that the
+  *   attributes that are intended to go together do.
+  *
+  *   <Qualification:type>: must be one of:
+  *     - skill
+  *     - experience*
+  *     - education
+  *     - license*
+  *     - certification
+  *     - equipment*
+  *     - other
+  *
+  *   <Qualification type="experience"> also requires a "yearsOfExperience" attribute.
+  *   <Qualification type="license"> also requires a "description" with the value
+  *     "DriversLicense" and a "category" attribute.
+  *   <Qualification type="equipment"> requires  a "description" attribute with
+  *     the value "Car"
+  *
+  *   The following attributes will pass:
+  *     - type
+  *     - description
+  *     - yearsOfExperience
+  *     - level
+  *     - interest
+  *     - yearLastUsed
+  *     - source
+  *     - category
+  *
+  *   Excepting the pairings noted above, any combination or value will pass.
+  */
+
+  jsonQualification: ({
+    type,
+    description,
+    yearsOfExperience,
+    category,
+  } = {}) => ({
+  }),
+
+  qualification(...attributes) {
+
+    let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+    console.log(x); // 1
+    console.log(y); // 2
+    console.log(z); // { a: 3, b: 4 }
+
+  /*
+    const { type, ...others } = attributes;
+    console.log(type);
+    console.log(others);
+    console.log(attributes);
+  */
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;
