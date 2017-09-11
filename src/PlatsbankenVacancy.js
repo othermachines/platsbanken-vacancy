@@ -4,6 +4,9 @@
 * in the file "Extern_hrxml_format_description_Vers 0 99.xls"
 */
 
+// enable source map support
+require('source-map-support').install();
+
 const xml = require('xml');
 const Joi = require('joi');
 
@@ -962,7 +965,6 @@ const PlatsbankenVacancy = ({
   }),
 
   qualification(...attributes) {
-
     let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
     console.log(x); // 1
     console.log(y); // 2

@@ -1,4 +1,4 @@
-const Vacancy = require('./PlatsbankenVacancy.js');
+const Vacancy = require('./build/PlatsbankenVacancy.js');
 
 const http = require('http');
 
