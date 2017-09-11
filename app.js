@@ -83,16 +83,27 @@ try {
       summary: 'Summary of qualifications',
     })
     .qualification({
+      type: 'license',
+      description: 'DriversLicense',
+      category: 'B',
+    })
+    .qualification({
       type: 'experience',
-      foo: 'bar',
+      yearsOfExperience: 1,
+    })
+    .qualification({
+      type: 'equipment',
+      description: 'Car',
     });
 } catch (err) {
   console.log(err);
   // console.log(err.details);
-  console.log('-----');
-  console.log(err.details[0].context);
-  console.log('-----');
-  console.log(err.annotate());
+  if (err.isJoi) {
+    console.log('-----');
+    console.log(err.details[0].context);
+    console.log('-----');
+    console.log(err.annotate());
+  }
   process.exit(1);
 }
 

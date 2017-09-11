@@ -956,26 +956,73 @@ const PlatsbankenVacancy = ({
   *   Excepting the pairings noted above, any combination or value will pass.
   */
 
-  jsonQualification: ({
-    type,
-    description,
-    yearsOfExperience,
-    category,
-  } = {}) => ({
-  }),
+  jsonQualification: ({ _attr } = {}) => ({ Qualification: { _attr } }),
 
-  qualification(...attributes) {
-    let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
-    console.log(x); // 1
-    console.log(y); // 2
-    console.log(z); // { a: 3, b: 4 }
+  qualification({ type, description, yearsOfExperience, category, ...attrs }) {
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionRequirements) {
+      this.jobPositionRequirements();
+    }
 
-  /*
-    const { type, ...others } = attributes;
-    console.log(type);
-    console.log(others);
-    console.log(attributes);
-  */
+    Joi.assert({
+      type,
+    }, {
+      type: Joi.string().valid(['skill', 'experience', 'education', 'license',
+        'certification', 'equipment', 'other']).optional(),
+    });
+
+    Joi.assert({
+      type,
+      yearsOfExperience,
+    }, {
+      type: Joi.string().optional(),
+      yearsOfExperience: Joi.when('type', {
+        is: 'experience',
+        then: Joi.required(),
+      }).description('If type is "experience", "yearsOfExperience" is required.'),
+    });
+
+    Joi.assert({
+      type,
+      description,
+      category,
+    }, {
+      type: Joi.string().optional(),
+      description: Joi.when('type', {
+        is: 'license',
+        then: Joi.string().valid('DriversLicense').required(),
+      }).description('If type is "license", "description" must be "DriversLicense".'),
+      category: Joi.when('type', {
+        is: 'license',
+        then: Joi.required(),
+      }).description('If type is "license", "category" is required.'),
+    });
+
+    Joi.assert({
+      type,
+      description,
+    }, {
+      type: Joi.string().optional(),
+      description: Joi.when('type', {
+        is: 'equipment',
+        then: Joi.string().valid('Car').required(),
+      }).description('If type is "equipment", "description" must be "Car".'),
+    });
+
+    const _attr = {
+      type,
+      description,
+      yearsOfExperience,
+      category,
+      ...attrs,
+    };
+
+    // some of our attributes may be undefined (not everything must be
+    // passed in). Clean those out so we don't have spurious attributes.
+    Object.keys(_attr).forEach(key => !_attr[key] && delete _attr[key]);
+
+    this.ref.QualificationsRequired.push(this.jsonQualification({ _attr }));
+
     return this;
   },
 
