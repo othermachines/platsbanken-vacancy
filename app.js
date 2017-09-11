@@ -81,6 +81,10 @@ try {
     })
     .qualificationsRequiredSummary({
       summary: 'Summary of qualifications',
+    })
+    .qualification({
+      type: 'experience',
+      foo: 'bar',
     });
 } catch (err) {
   console.log(err);
