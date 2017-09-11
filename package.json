@@ -5,7 +5,10 @@
   "main": "app.js",
   "repository": "none",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --out-dir build --source-maps",
+    "watch": "babel src --out-dir build --source-maps --watch",
+    "start": "node app.js"
   },
   "author": "dholmberg@othermachines.com",
   "license": "ISC",
@@ -16,6 +19,7 @@
     "xml": "^1.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-preset-stage-3": "^6.24.1",
