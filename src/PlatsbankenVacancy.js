@@ -1201,6 +1201,82 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  jsonJPPExtension: () => ({ JPPExtension: [] }),
+
+  jppExtension() {
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('JPPExtension must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+    }
+
+    this.ref.JobPositionPosting.push(this.jsonJPPExtension());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'JPPExtension',
+      parent: 'JobPositionPosting',
+    });
+
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
+  * <HiringOrgDescription>
+  * Recommended but not required. Description of the company.
+  */
+
+  /*
+  * HRXML 0.99
+  * <OccupationGroup:code>
+  * The job classification code for the job posting (according to code
+  * type OccupationNameID)
+  * Required.
+  */
+
+  /*
+  * HRXML 0.99
+  * <OccupationGroup:codename>
+  * Type of job classification code used
+  * Required, must be "OccupationNameID".
+  * This is the default in occupationGroup() and does not need to be passed in.
+  */
+
+  jsonHiringOrgDescription: ({
+    description: HiringOrgDescription,
+  } = {}) => ({
+    HiringOrgDescription,
+  }),
+
+  hiringOrgDescription({ description } = {}) {
+    if (!this.ref.JPPExtension) {
+      this.jppExtension();
+    }
+    Joi.assert({ description }, { description: Joi.string().required() });
+
+    this.ref.JPPExtension.push(this.jsonHiringOrgDescription({ description }));
+
+    return this;
+  },
+
+  jsonOccupationGroup: ({
+    code,
+    codename,
+  } = {}) => ({
+    OccupationGroup: [{ _attr: { code, codename } }],
+  }),
+
+  occupationGroup({ code, codename = 'OccupationNameID' } = {}) {
+    if (!this.ref.JPPExtension) {
+      this.jppExtension();
+    }
+
+    Joi.assert({ code }, { code: Joi.number().required() });
+
+    this.ref.JPPExtension.push(this.jsonOccupationGroup({ code, codename }));
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;

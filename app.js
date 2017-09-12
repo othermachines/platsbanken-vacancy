@@ -107,6 +107,12 @@ try {
     })
     .numberToFill({
       number: 1,
+    })
+    .hiringOrgDescription({
+      description: 'HIRING ORG DESCRIPTION',
+    })
+    .occupationGroup({
+      code: 12345,
     });
 } catch (err) {
   console.log(err);
