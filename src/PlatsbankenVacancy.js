@@ -1180,6 +1180,27 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <NumberToFill>
+  * Number of positions to be filled.
+  * Any number between 1 and 999.
+  */
+
+  jsonNumberToFill: ({ number: NumberToFill } = {}) => ({ NumberToFill }),
+
+  numberToFill({ number } = {}) {
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('NumberToFill must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+    }
+
+    Joi.assert({ number }, { number: Joi.number().max(999).required() });
+
+    this.ref.JobPositionPosting.push(this.jsonNumberToFill({ number }));
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;

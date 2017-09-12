@@ -104,6 +104,9 @@ try {
     .byWeb({
       url: 'http://example.org',
       summary: 'summary text',
+    })
+    .numberToFill({
+      number: 1,
     });
 } catch (err) {
   console.log(err);
