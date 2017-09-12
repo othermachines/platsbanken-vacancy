@@ -1105,6 +1105,14 @@ const PlatsbankenVacancy = ({
   * Maximum size is 200 characters.
   */
 
+  /*
+  * <HowToApply><ApplicationMethods><ByWeb><SummaryText>
+  * Note that the HRXML 0.99 documentation is unclear on this. In the
+  * spreadsheet <SummaryText> appears to be one element with it's immediate
+  * parent being HowToApply. In the XSDs, it is an element that each
+  * application method (ByWeb, InPerson, ByMail, etc.) has as a child.
+  */
+
   jsonHowToApply: ({ distribute } = {}) => ({
     HowToApply: [{ _attr: { distribute } }],
   }),
