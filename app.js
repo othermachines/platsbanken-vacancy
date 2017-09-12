@@ -97,6 +97,13 @@ try {
     })
     .qualificationsPreferredSummary({
       summary: 'PREFERRED QUALIFICATIONS',
+    })
+    // applicationMethods() not neccessary, will be called by byWeb()
+    // included for clarity
+    .applicationMethods()
+    .byWeb({
+      url: 'http://example.org',
+      summary: 'summary text',
     });
 } catch (err) {
   console.log(err);

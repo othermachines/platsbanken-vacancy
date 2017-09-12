@@ -1080,6 +1080,98 @@ const PlatsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * <HowToApply>
+  *
+  * This element has one attribute, "distribute", which is required and must
+  * be set to "external". These are used as the default parameters, so do
+  * not need to be passed when calling.
+  *
+  * Neither howToApply() or applicationMethods() need to be called directly,
+  * as they are called by byWeb().
+  *
+  * See note 2 in HRXML 0.99 regarding allowed length for the fields under this element.
+  * Total length for text in all elements can be a maximum of 340 characters.
+  * Currently, only the application method <ByWeb> is implemented, so this
+  * length check is ONLY done against the <ByWeb><SummaryText> element.
+  * If other application methods are implemented, this will need to be modified.
+  */
+
+  /*
+  * HRXML 0.99
+  * <URL>
+  * A web address where applicants can register an application.
+  * If present, a link is published with the text: 'Ansök via vår webplats'.
+  * Maximum size is 200 characters.
+  */
+
+  jsonHowToApply: ({ distribute } = {}) => ({
+    HowToApply: [{ _attr: { distribute } }],
+  }),
+
+  howToApply({ distribute } = { distribute: 'external' }) {
+    if (!this.ref.JobPositionPosting) {
+      throw new Error('HowToApply must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
+    }
+
+    Joi.assert({ distribute }, { distribute: Joi.string().required() });
+
+    this.ref.JobPositionPosting.push(this.jsonHowToApply({ distribute }));
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'HowToApply',
+      parent: 'JobPositionPosting',
+    });
+
+    return this;
+  },
+
+  jsonApplicationMethods: () => ({ ApplicationMethods: [] }),
+
+  applicationMethods() {
+    if (!this.ref.HowToApply) {
+      this.howToApply();
+    }
+
+    this.ref.HowToApply.push(this.jsonApplicationMethods());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'ApplicationMethods',
+      parent: 'HowToApply',
+    });
+
+    return this;
+  },
+
+  jsonByWeb: ({
+    url: URL,
+    summary: SummaryText,
+  } = {}) => ({
+    ByWeb: [{ URL }, { SummaryText }],
+  }),
+
+  byWeb({ url, summary } = {}) {
+    Joi.assert({
+      url,
+      summary,
+    }, {
+      url: Joi.string().max(200).uri({
+        scheme: ['http', 'https'],
+      }),
+      summary: Joi.string().max(340).optional(),
+    });
+
+    if (!this.ref.ApplicationMethods) {
+      this.applicationMethods();
+    }
+
+    this.ref.ApplicationMethods.push(this.jsonByWeb({ url, summary }));
+
+    return this;
+  },
+
 });
 
 module.exports = PlatsbankenVacancy;
