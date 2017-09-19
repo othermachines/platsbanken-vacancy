@@ -28,6 +28,7 @@ const PlatsbankenVacancy = ({
 
   toXml: (obj, options = {}) => xml(obj, options),
   toString() { return this.toXml(this.doc, this.xmlOptions); },
+  json() { return this.doc; },
 
   // writing this:
   //   this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
