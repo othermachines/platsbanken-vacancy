@@ -65,8 +65,8 @@ const PlatsbankenVacancy = ({
   jsonSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
   sender({ id, email } = {}) {
     Joi.assert({ id, email }, {
-      id: Joi.number().integer().positive(),
-      email: Joi.string().email(),
+      id: Joi.number().integer().positive().required(),
+      email: Joi.string().email().required(),
     });
 
     this.doc.Envelope.push(this.jsonSender({ id, email }));
