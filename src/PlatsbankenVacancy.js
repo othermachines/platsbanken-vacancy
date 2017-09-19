@@ -148,6 +148,7 @@ const PlatsbankenVacancy = ({
   * <JobPositionPostingId>
   * This is a common identifier for this particular job position posting.
   * Landskod-HiringOrgId-Valfri1-Valfri2
+  * Country Code-HiringOrgId-Optional1-Optional2
   */
   jsonJobPositionPosting: ({
     id: JobPositionPostingId,
