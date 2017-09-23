@@ -310,9 +310,7 @@ const PlatsbankenVacancy = ({
     Contact: [PostalAddress],
   }),
 
-  validateHiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName }) {
-    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
-  },
+  validateHiringOrgContact: function gen() { return this.validatePostalAddress; },
 
   hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
     this.validateHiringOrgContact({
@@ -592,9 +590,7 @@ const PlatsbankenVacancy = ({
     ],
   }),
 
-  validateJobPositionLocation({ countryCode, postalCode, municipality, addressLine, streetName }) {
-    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
-  },
+  validateJobPositionLocation: function gen() { return this.validatePostalAddress; },
 
   jobPositionLocation({
     countryCode,
