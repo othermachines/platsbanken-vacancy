@@ -211,6 +211,7 @@ describe('PlatsbankenVacancy', () => {
     });
   });
 
+  /*
   describe('check invalid parameters are not accepted', () => {
     const request = Vacancy();
 
@@ -234,6 +235,7 @@ describe('PlatsbankenVacancy', () => {
       }
     });
   });
+  */
 
   describe('sender()', () => {
     // rebuild on every set of method tests
