@@ -63,12 +63,16 @@ const PlatsbankenVacancy = ({
   * Note: this is an element attribute.
   */
   jsonSender: ({ id, email } = {}) => ({ Sender: { _attr: { id, email } } }),
-  sender({ id, email } = {}) {
+
+  validateSender: ({ id, email }) => {
     Joi.assert({ id, email }, {
       id: Joi.number().integer().positive().required(),
       email: Joi.string().email().required(),
     });
+  },
 
+  sender({ id, email } = {}) {
+    this.validateSender({ id, email });
     this.doc.Envelope.push(this.jsonSender({ id, email }));
     return this;
   },
@@ -92,9 +96,13 @@ const PlatsbankenVacancy = ({
     const _attr = { timeStamp: '2017-08-20T18:40:49Z' };
     return { TransactInfo: [{ _attr }, { TransactId }] };
   },
-  transaction({ id } = {}) {
-    Joi.assert({ id }, { id: Joi.string().required() });
 
+  validateTransaction: ({ id }) => {
+    Joi.assert({ id }, { id: Joi.string().required() });
+  },
+
+  transaction({ id } = {}) {
+    this.validateTransaction({ id });
     this.doc.Envelope.push(this.jsonTransaction({ id }));
 
     // one transaction can contain many packets
@@ -114,6 +122,7 @@ const PlatsbankenVacancy = ({
   jsonPacket: ({ id = 1 } = { id: 1 }) => ({
     Packet: [{ PacketInfo: [{ PacketId: id }] }, { Payload: [] }],
   }),
+
   packet() {
     this.packetCount = this.packetCount + 1;
 
@@ -157,11 +166,16 @@ const PlatsbankenVacancy = ({
   } = { status: 'active' }) => ({
     JobPositionPosting: [{ _attr: { status } }, { JobPositionPostingId }],
   }),
-  jobPositionPosting({ id, status = 'active' } = { status: 'active' }) {
+
+  validateJobPositionPosting: ({ id, status }) => {
     Joi.assert({ id, status }, {
       id: Joi.string().max(50).required(),
       status: Joi.valid(['active', 'inactive']),
     });
+  },
+
+  jobPositionPosting({ id, status = 'active' } = { status: 'active' }) {
+    this.validateJobPositionPosting({ id, status });
 
     if (!this.ref.Payload) {
       throw new Error('JobPositionPosting must be attached to a Payload element. Did you call transaction()?');
@@ -199,13 +213,17 @@ const PlatsbankenVacancy = ({
   } = {}) => ({
     HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { Website }],
   }),
-  hiringOrg({ name, id, url } = {}) {
+
+  validateHiringOrg: ({ name, id, url }) => {
     Joi.assert({ name, id, url }, {
       name: Joi.string().required(),
       id: Joi.string().required(),
       url: Joi.string().optional(),
     });
+  },
 
+  hiringOrg({ name, id, url } = {}) {
+    this.validateHiringOrg({ name, id, url });
     if (!this.ref.JobPositionPosting) {
       throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
@@ -292,9 +310,14 @@ const PlatsbankenVacancy = ({
     Contact: [PostalAddress],
   }),
 
-  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
-    // throws error on failure
+  validateHiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName }) {
     this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
+  },
+
+  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
+    this.validateHiringOrgContact({
+      countryCode, postalCode, municipality, addressLine, streetName,
+    });
 
     if (!this.ref.HiringOrg) {
       throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
@@ -366,13 +389,18 @@ const PlatsbankenVacancy = ({
       ] },
     ],
   }),
-  postDetail({ startDate, endDate, recruiterName, recruiterEmail } = {}) {
+
+  validatePostDetail: ({ startDate, endDate, recruiterName, recruiterEmail }) => {
     Joi.assert({ startDate, endDate, recruiterName, recruiterEmail }, {
       startDate: Joi.string().isoDate().required(),
       endDate: Joi.string().isoDate().required(),
       recruiterName: Joi.string().max(100).required(),
       recruiterEmail: Joi.string().email(),
     });
+  },
+
+  postDetail({ startDate, endDate, recruiterName, recruiterEmail } = {}) {
+    this.validatePostDetail({ startDate, endDate, recruiterName, recruiterEmail });
 
     if (!this.ref.JobPositionPosting) {
       throw new Error('PostDetail must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
@@ -388,6 +416,7 @@ const PlatsbankenVacancy = ({
   jsonJobPositionInformation: () => ({
     JobPositionInformation: [],
   }),
+
   jobPositionInformation() {
     if (!this.ref.JobPositionPosting) {
       throw new Error('JobPositionInformation must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
@@ -411,10 +440,15 @@ const PlatsbankenVacancy = ({
   */
 
   jsonJobPositionTitle: ({ title: JobPositionTitle } = {}) => ({ JobPositionTitle }),
-  jobPositionTitle({ title } = {}) {
+
+  validateJobPositionTitle: ({ title }) => {
     Joi.assert({ title }, {
       title: Joi.string().max(75).required(),
     });
+  },
+
+  jobPositionTitle({ title } = {}) {
+    this.validateJobPositionTitle({ title });
 
     // make sure we have the required parent element
     if (!this.ref.JobPositionInformation) {
@@ -431,6 +465,7 @@ const PlatsbankenVacancy = ({
   */
 
   jsonJobPositionDescription: () => ({ JobPositionDescription: [] }),
+
   jobPositionDescription() {
     // make sure we have the required parent element
     if (!this.ref.JobPositionInformation) {
@@ -457,10 +492,15 @@ const PlatsbankenVacancy = ({
   jsonJobPositionPurpose: ({ purpose: JobPositionPurpose } = {}) => ({
     JobPositionPurpose,
   }),
-  jobPositionPurpose({ purpose } = {}) {
+
+  validateJobPositionPurpose: ({ purpose }) => {
     Joi.assert({ purpose }, {
       purpose: Joi.string().required(),
     });
+  },
+
+  jobPositionPurpose({ purpose } = {}) {
+    this.validateJobPositionPurpose({ purpose });
 
     // make sure we have the required parent element
     if (!this.ref.JobPositionDescription) {
@@ -551,6 +591,11 @@ const PlatsbankenVacancy = ({
       { LocationSummary: [{ Municipality }, { CountryCode }] },
     ],
   }),
+
+  validateJobPositionLocation({ countryCode, postalCode, municipality, addressLine, streetName }) {
+    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
+  },
+
   jobPositionLocation({
     countryCode,
     postalCode,
@@ -558,8 +603,9 @@ const PlatsbankenVacancy = ({
     addressLine,
     streetName,
   } = {}) {
-    // throws error on failure
-    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
+    this.validateJobPositionLocation({
+      countryCode, postalCode, municipality, addressLine, streetName,
+    });
 
     // make sure we have the required parent element
     if (!this.ref.JobPositionDescription) {
@@ -671,13 +717,11 @@ const PlatsbankenVacancy = ({
     return { Classification: [scheduleObj, durationObj] };
   },
 
-  classification({
+  validateClassification: ({
     scheduleType,
     duration,
-    scheduleSummaryText,
-    durationSummaryText,
     termLength,
-  } = { scheduleType: 'full', duration: 'regular' }) {
+  }) => {
     Joi.assert({
       scheduleType,
       duration,
@@ -690,7 +734,20 @@ const PlatsbankenVacancy = ({
         then: Joi.valid([2, 3, 4, 7, 8]).required(),
       }).description('Required if position is temporary'),
     });
+  },
 
+  classification({
+    scheduleType,
+    duration,
+    scheduleSummaryText,
+    durationSummaryText,
+    termLength,
+  } = { scheduleType: 'full', duration: 'regular' }) {
+    this.validateClassification({
+      scheduleType,
+      duration,
+      termLength,
+    });
     this.ref.JobPositionDescription.push(this.jsonClassification({
       scheduleType,
       duration,
@@ -752,14 +809,7 @@ const PlatsbankenVacancy = ({
     }],
   }),
 
-  compensationDescription({ currency, salaryType, benefits, summary } = {}) {
-    this.ref.JobPositionDescription.push(this.jsonCompensationDescription({
-      currency,
-      salaryType,
-      benefits,
-      summary,
-    }));
-
+  validateCompensationDescription: ({ currency, salaryType, benefits, summary }) => {
     Joi.assert({
       currency,
       salaryType,
@@ -767,6 +817,19 @@ const PlatsbankenVacancy = ({
       currency: Joi.any().required(),
       salaryType: Joi.number().valid([1, 2, 3]).required(),
     });
+    if (benefits.length + summary.length > 255) {
+      throw new Error('Summary text length plus benefits text length must not exceed 255 characters');
+    }
+  },
+
+  compensationDescription({ currency, salaryType, benefits, summary } = {}) {
+    this.validateCompensationDescription({ currency, salaryType, benefits, summary });
+    this.ref.JobPositionDescription.push(this.jsonCompensationDescription({
+      currency,
+      salaryType,
+      benefits,
+      summary,
+    }));
 
     if (benefits.length + summary.length > 255) {
       throw new Error('Summary text length plus benefits text length must not exceed 255 characters');
@@ -819,7 +882,12 @@ const PlatsbankenVacancy = ({
 
   jsonQualificationsRequiredSummary: ({ summary: P } = {}) => ({ P }),
 
+  validateQualificationsRequiredSummary: ({ summary }) => {
+    Joi.assert({ summary }, { summary: Joi.string().optional() });
+  },
+
   qualificationsRequiredSummary({ summary } = {}) {
+    this.validateQualificationsRequiredSummary({ summary });
     // make sure we have the required parent elements
     if (!this.ref.JobPositionInformation) {
       this.jobPositionInformation();
@@ -960,12 +1028,7 @@ const PlatsbankenVacancy = ({
 
   jsonQualification: ({ _attr } = {}) => ({ Qualification: { _attr } }),
 
-  qualification({ type, description, yearsOfExperience, category, ...attrs }) {
-    // make sure we have the required parent element
-    if (!this.ref.JobPositionRequirements) {
-      this.jobPositionRequirements();
-    }
-
+  validateQualification: ({ type, description, yearsOfExperience, category }) => {
     Joi.assert({
       type,
     }, {
@@ -1010,7 +1073,14 @@ const PlatsbankenVacancy = ({
         then: Joi.string().valid('Car').required(),
       }).description('If type is "equipment", "description" must be "Car".'),
     });
+  },
 
+  qualification({ type, description, yearsOfExperience, category, ...attrs }) {
+    this.validateQualification({ type, description, yearsOfExperience, category });
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionRequirements) {
+      this.jobPositionRequirements();
+    }
     const _attr = {
       type,
       description,
@@ -1060,13 +1130,16 @@ const PlatsbankenVacancy = ({
 
   jsonQualificationsPreferredSummary: ({ summary: P } = {}) => ({ P }),
 
-  qualificationsPreferredSummary({ summary } = {}) {
+  validateQualificationsPreferredSummary: ({ summary }) => {
     Joi.assert({
       summary,
     }, {
       summary: Joi.required(),
     });
+  },
 
+  qualificationsPreferredSummary({ summary } = {}) {
+    this.validateQualificationsPreferredSummary({ summary });
     // make sure we have the required parent elements
     if (!this.ref.JobPositionInformation) {
       this.jobPositionInformation();
@@ -1119,12 +1192,15 @@ const PlatsbankenVacancy = ({
     HowToApply: [{ _attr: { distribute } }],
   }),
 
+  validateHowToApply: ({ distribute }) => {
+    Joi.assert({ distribute }, { distribute: Joi.string().required() });
+  },
+
   howToApply({ distribute } = { distribute: 'external' }) {
+    this.validateHowToApply({ distribute });
     if (!this.ref.JobPositionPosting) {
       throw new Error('HowToApply must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
-
-    Joi.assert({ distribute }, { distribute: Joi.string().required() });
 
     this.ref.JobPositionPosting.push(this.jsonHowToApply({ distribute }));
 
@@ -1162,7 +1238,7 @@ const PlatsbankenVacancy = ({
     ByWeb: [{ URL }, { SummaryText }],
   }),
 
-  byWeb({ url, summary } = {}) {
+  validateByWeb: ({ url, summary }) => {
     Joi.assert({
       url,
       summary,
@@ -1172,6 +1248,10 @@ const PlatsbankenVacancy = ({
       }),
       summary: Joi.string().max(340).optional(),
     });
+  },
+
+  byWeb({ url, summary } = {}) {
+    this.validateByWeb({ url, summary });
 
     if (!this.ref.ApplicationMethods) {
       this.applicationMethods();
@@ -1191,12 +1271,15 @@ const PlatsbankenVacancy = ({
 
   jsonNumberToFill: ({ number: NumberToFill } = {}) => ({ NumberToFill }),
 
+  validateNumberToFill: ({ number }) => {
+    Joi.assert({ number }, { number: Joi.number().max(999).required() });
+  },
+
   numberToFill({ number } = {}) {
+    this.validateNumberToFill({ number });
     if (!this.ref.JobPositionPosting) {
       throw new Error('NumberToFill must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
-
-    Joi.assert({ number }, { number: Joi.number().max(999).required() });
 
     this.ref.JobPositionPosting.push(this.jsonNumberToFill({ number }));
 
@@ -1249,11 +1332,15 @@ const PlatsbankenVacancy = ({
     HiringOrgDescription,
   }),
 
+  validateHiringOrgDescription: ({ description }) => {
+    Joi.assert({ description }, { description: Joi.string().required() });
+  },
+
   hiringOrgDescription({ description } = {}) {
+    this.validateHiringOrgDescription({ description });
     if (!this.ref.JPPExtension) {
       this.jppExtension();
     }
-    Joi.assert({ description }, { description: Joi.string().required() });
 
     this.ref.JPPExtension.push(this.jsonHiringOrgDescription({ description }));
 
@@ -1267,12 +1354,15 @@ const PlatsbankenVacancy = ({
     OccupationGroup: [{ _attr: { code, codename } }],
   }),
 
+  validateOccupationGroup: ({ code }) => {
+    Joi.assert({ code }, { code: Joi.number().required() });
+  },
+
   occupationGroup({ code, codename = 'OccupationNameID' } = {}) {
+    this.validateOccupationGroup({ code });
     if (!this.ref.JPPExtension) {
       this.jppExtension();
     }
-
-    Joi.assert({ code }, { code: Joi.number().required() });
 
     this.ref.JPPExtension.push(this.jsonOccupationGroup({ code, codename }));
 
