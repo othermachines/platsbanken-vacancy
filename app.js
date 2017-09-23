@@ -116,7 +116,8 @@ try {
     });
 } catch (err) {
   console.log(err);
-  // console.log(err.details);
+  console.log(err.message);
+  console.log(err.details);
   if (err.isJoi) {
     console.log('-----');
     console.log(err.details[0].context);

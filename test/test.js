@@ -1,3 +1,4 @@
+const util = require('util');
 const chai = require('chai');
 
 chai.use(require('chai-things'));
@@ -5,38 +6,130 @@ chai.use(require('chai-things'));
 const expect = chai.expect;
 const Vacancy = require('../build/PlatsbankenVacancy.js');
 
-const options = {
-  indent: '  ',
-};
-const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
+// We will be building new PlatsbankenVacancies throughout, and sometimes this
+// requires calling a series of methods to reach the state we want to be at.
+// Rather than repeatedly specify valid parameters for each method, set
+// default valid parameters that can be reused here.
 
+// And now that we have these, it's a convenient way to check that each method
+// accepts valid parameters. In cases where there are variations
+// (e.g., jobPositionPosting() or qualification(), different sets can be
+// set in an array.
+const params = {
+  sender: { id: 1, email: 'foo@example.org' },
+  transaction: { id: 'valid' },
+  jobPositionPosting: [
+    {}, // THIS SHOULDN"T WORK
+    { id: '123-456' },
+    { id: '123-456', status: 'active' },
+    { id: '123-456', status: 'inactive' },
+    { id: '123-456', status: 'foo' }, // THIS SHOULDN"T WORK
+  ],
+  hiringOrg: {
+    name: 'ORG NAME',
+    id: '46-XXYYZZ-XXYY-1',
+    url: 'http://example.org',
+  },
+  hiringOrgContact: {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  },
+  postDetail: {
+    startDate: '2018-09-01',
+    endDate: '2018-12-01',
+    recruiterName: 'Alex Smith',
+    recruiterEmail: 'alexsmith@example.org',
+  },
+  jobPositionTitle: {
+    title: 'JOB TITLE',
+  },
+  jobPositionPurpose: {
+    purpose: 'JOB PURPOSE',
+  },
+  jobPositionLocation: {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  },
+  classification: {
+    scheduleType: 'part',
+    duration: 'temporary',
+    scheduleSummaryText: 'Schedule Summary',
+    durationSummaryText: 'Duration Summary',
+    termLength: 2,
+  },
+  compensationDescription: {
+    currency: 'SEK',
+    salaryType: 1,
+    benefits: 'bennies',
+    summary: 'summary text',
+  },
+  qualificationsRequiredSummary: {
+    summary: 'Summary of qualifications',
+  },
+  qualification: [{
+    type: 'license',
+    description: 'DriversLicense',
+    category: 'B',
+  }, {
+    type: 'experience',
+    yearsOfExperience: 1,
+  }, {
+    type: 'equipment',
+    description: 'Car',
+  }],
+  qualificationsPreferredSummary: {
+    summary: 'PREFERRED QUALIFICATIONS',
+  },
+  byWeb: {
+    url: 'http://example.org',
+    summary: 'summary text',
+  },
+  numberToFill: {
+    number: 1,
+  },
+  hiringOrgDescription: {
+    description: 'HIRING ORG DESCRIPTION',
+  },
+  occupationGroup: {
+    code: 12345,
+  },
+};
 
 describe('PlatsbankenVacancy', () => {
+  describe('check valid parameters are accepted', () => {
+    const request = Vacancy();
+
+    Object.keys(params).forEach((method) => {
+      const p = params[method];
+      if (Array.isArray(p)) {
+        p.forEach((p2) => {
+          const pstring = util.inspect(p2);
+          it(`${method} should accept ${pstring} `, () => {
+            expect(() => request[method](p2)).to.not.throw();
+          });
+        });
+      } else {
+        const pstring = util.inspect(params[method]);
+        it(`${method} should accept ${pstring} `, () => {
+          expect(() => request[method](p)).to.not.throw();
+        });
+      }
+    });
+  });
+
   describe('sender()', () => {
-    // should fail
-    it('should require an id', () => {
-      expect(() =>
-        request.sender({ email: 'foo@example.org' }))
-        .to.throw();
-    });
-    it('should require an email', () => {
-      expect(() =>
-        request.sender({ id: 1 }))
-        .to.throw();
-    });
-    it('should require a valid email', () => {
-      expect(() =>
-        request.sender({ id: 1, email: 'notanemail' }))
-        .to.throw();
-    });
+    // rebuild on every set of method tests
+    const request = Vacancy();
 
     // should pass
-    it('should accept a numeric id and a valid email', () => {
-      expect(() =>
-        request.sender({ id: 1, email: 'foo@example.org' }))
-        .to.not.throw();
-    });
     it('should add a Sender tag with attributes to the Envelope', () => {
+      request.sender({ id: 1, email: 'foo@example.org' });
       expect(request.json().Envelope)
         .include.something.to.have.property('Sender');
       expect(request.json().Envelope)
@@ -49,20 +142,12 @@ describe('PlatsbankenVacancy', () => {
   });
 
   describe('transaction()', () => {
-    // should fail
-    it('should require an id', () => {
-      expect(() =>
-        request.transaction({}))
-        .to.throw();
-    });
+    const request = Vacancy();
+    request.sender(params.sender);
 
-    // should pass
-    it('should accept a string id', () => {
-      expect(() =>
-        request.transaction({ id: 'valid' }))
-        .to.not.throw();
-    });
+    // should fail
     it('should add the TransactInfo tag set to the Envelope', () => {
+      request.transaction(params.transaction);
       expect(request.json().Envelope)
         .include.something.to.have.property('TransactInfo');
       expect(request.json().Envelope)
@@ -72,6 +157,28 @@ describe('PlatsbankenVacancy', () => {
       expect(request.json().Envelope)
         .include.something.to.have.nested.property('TransactInfo[1].TransactId');
     });
+    it('should add a Packet tag set to the Envelope', () => {
+      expect(request.json().Envelope)
+        .include.something.to.have.property('Packet');
+      expect(request.json().Envelope)
+        .include.something.to.have.nested.property('Packet[0].PacketInfo');
+      expect(request.json().Envelope)
+        .include.something.to.have.nested.property('Packet[1].Payload');
+    });
+  });
+  describe('jobPositionPosting()', () => {
+    const request = Vacancy();
+    request.sender(params.sender);
+    request.transaction(params.transaction);
+
+    // should fail
+    it('should require transaction() to have been called first', () => {
+      expect(() => {
+        Vacancy().jobPositionPosting(params.jobPositionPosting);
+      }).to.throw();
+    });
+
+    // should pass
     it('should add a Packet tag set to the Envelope', () => {
       expect(request.json().Envelope)
         .include.something.to.have.property('Packet');
