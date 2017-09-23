@@ -19,6 +19,90 @@ const params = {
   sender: { id: 1, email: 'foo@example.org' },
   transaction: { id: 'valid' },
   jobPositionPosting: [
+    { id: '123-456' },
+    { id: '123-456', status: 'active' },
+    { id: '123-456', status: 'inactive' },
+  ],
+  hiringOrg: {
+    name: 'ORG NAME',
+    id: '46-XXYYZZ-XXYY-1',
+    url: 'http://example.org',
+  },
+  hiringOrgContact: {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  },
+  postDetail: {
+    startDate: '2018-09-01',
+    endDate: '2018-12-01',
+    recruiterName: 'Alex Smith',
+    recruiterEmail: 'alexsmith@example.org',
+  },
+  jobPositionTitle: {
+    title: 'JOB TITLE',
+  },
+  jobPositionPurpose: {
+    purpose: 'JOB PURPOSE',
+  },
+  jobPositionLocation: {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  },
+  classification: {
+    scheduleType: 'part',
+    duration: 'temporary',
+    scheduleSummaryText: 'Schedule Summary',
+    durationSummaryText: 'Duration Summary',
+    termLength: 2,
+  },
+  compensationDescription: {
+    currency: 'SEK',
+    salaryType: 1,
+    benefits: 'bennies',
+    summary: 'summary text',
+  },
+  qualificationsRequiredSummary: {
+    summary: 'Summary of qualifications',
+  },
+  qualification: [{
+    type: 'license',
+    description: 'DriversLicense',
+    category: 'B',
+  }, {
+    type: 'experience',
+    yearsOfExperience: 1,
+  }, {
+    type: 'equipment',
+    description: 'Car',
+  }],
+  qualificationsPreferredSummary: {
+    summary: 'PREFERRED QUALIFICATIONS',
+  },
+  byWeb: {
+    url: 'http://example.org',
+    summary: 'summary text',
+  },
+  numberToFill: {
+    number: 1,
+  },
+  hiringOrgDescription: {
+    description: 'HIRING ORG DESCRIPTION',
+  },
+  occupationGroup: {
+    code: 12345,
+  },
+};
+
+const invalidParams = {
+  sender: { id: 1, email: 'foo@example.org' },
+  transaction: { id: 'valid' },
+  jobPositionPosting: [
     {}, // THIS SHOULDN"T WORK
     { id: '123-456' },
     { id: '123-456', status: 'active' },
@@ -106,18 +190,46 @@ describe('PlatsbankenVacancy', () => {
     const request = Vacancy();
 
     Object.keys(params).forEach((method) => {
+      // get the name for this method's validation method
+      // eg., turn sender into validateSender
+      const vMethod = `validate${method[0].toUpperCase()}${method.slice(1)}`;
       const p = params[method];
+
       if (Array.isArray(p)) {
         p.forEach((p2) => {
           const pstring = util.inspect(p2);
-          it(`${method} should accept ${pstring} `, () => {
-            expect(() => request[method](p2)).to.not.throw();
+          it(`${vMethod} should accept ${pstring} `, () => {
+            expect(() => request[vMethod](p2)).to.not.throw();
           });
         });
       } else {
         const pstring = util.inspect(params[method]);
-        it(`${method} should accept ${pstring} `, () => {
-          expect(() => request[method](p)).to.not.throw();
+        it(`${vMethod} should accept ${pstring} `, () => {
+          expect(() => request[vMethod](p)).to.not.throw();
+        });
+      }
+    });
+  });
+
+  describe('check invalid parameters are not accepted', () => {
+    const request = Vacancy();
+
+    Object.keys(invalidParams).forEach((method) => {
+      // get the name for this method's validation method
+      // eg., turn sender into validateSender
+      const vMethod = `validate${method[0].toUpperCase()}${method.slice(1)}`;
+      const p = invalidParams[method];
+      if (Array.isArray(p)) {
+        p.forEach((p2) => {
+          const pstring = util.inspect(p2);
+          it(`${vMethod} should not accept ${pstring} `, () => {
+            expect(() => request[vMethod](p2)).to.not.throw();
+          });
+        });
+      } else {
+        const pstring = util.inspect(invalidParams[method]);
+        it(`${vMethod} should accept ${pstring} `, () => {
+          expect(() => request[vMethod](p)).to.not.throw();
         });
       }
     });
