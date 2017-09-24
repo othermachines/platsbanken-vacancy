@@ -127,7 +127,7 @@ try {
   process.exit(1);
 }
 
-// console.log(util.inspect(request.doc, false, null, true));
+console.log(util.inspect(request.doc, false, null, true));
 console.log();
 console.log('-'.repeat(80));
 console.log();
