@@ -386,8 +386,25 @@ describe('PlatsbankenVacancy', () => {
   });
   describe('XML', () => {
     const request = Vacancy();
-    request.sender(params.sender);
-    request.transaction(params.transaction);
+    request.sender(params.sender)
+      .transaction(params.transaction)
+      .jobPositionPosting(params.jobPositionPosting[0])
+      .hiringOrg(params.hiringOrg)
+      .hiringOrgContact(params.hiringOrgContact)
+      .postDetail(params.postDetail)
+      .jobPositionTitle(params.jobPositionTitle)
+      .jobPositionPurpose(params.jobPositionPurpose)
+      .jobPositionLocation(params.jobPositionLocation)
+      .classification(params.classification)
+      .qualificationsRequiredSummary(params.qualificationsRequiredSummary)
+      .qualification(params.qualification[0])
+      .qualification(params.qualification[1])
+      .qualification(params.qualification[2])
+      .qualificationsPreferredSummary(params.qualificationsPreferredSummary)
+      .byWeb(params.byWeb)
+      .numberToFill(params.numberToFill)
+      .hiringOrgDescription(params.hiringOrgDescription)
+      .occupationGroup(params.occupationGroup[0])
 
     it('XML should be valid', () => {
       expect(request.toString()).xml.to.be.valid();
