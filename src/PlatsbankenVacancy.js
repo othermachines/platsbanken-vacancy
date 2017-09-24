@@ -1192,9 +1192,6 @@ const PlatsbankenVacancy = ({
   }),
 
   validateHowToApply: ({ distribute = 'external' } = { distribute: 'external' }) => {
-    console.log('------------------');
-    console.log(distribute);
-    console.log('------------------');
     Joi.assert({ distribute }, { distribute: Joi.string().valid('external').required() });
   },
 
