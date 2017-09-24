@@ -81,91 +81,9 @@ const params = {
     type: 'equipment',
     description: 'Car',
   }],
-  qualificationsPreferredSummary: {
-    summary: 'PREFERRED QUALIFICATIONS',
-  },
-  byWeb: {
-    url: 'http://example.org',
-    summary: 'summary text',
-  },
-  numberToFill: {
-    number: 1,
-  },
-  hiringOrgDescription: {
-    description: 'HIRING ORG DESCRIPTION',
-  },
-  occupationGroup: {
-    code: 12345,
-  },
-};
-
-const invalidParams = {
-  sender: { id: 1, email: 'foo@example.org' },
-  transaction: { id: 'valid' },
-  jobPositionPosting: [
-    {}, // THIS SHOULDN"T WORK
-    { id: '123-456' },
-    { id: '123-456', status: 'active' },
-    { id: '123-456', status: 'inactive' },
-    { id: '123-456', status: 'foo' }, // THIS SHOULDN"T WORK
-  ],
-  hiringOrg: {
-    name: 'ORG NAME',
-    id: '46-XXYYZZ-XXYY-1',
-    url: 'http://example.org',
-  },
-  hiringOrgContact: {
-    countryCode: 'SE',
-    postalCode: '11356',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  },
-  postDetail: {
-    startDate: '2018-09-01',
-    endDate: '2018-12-01',
-    recruiterName: 'Alex Smith',
-    recruiterEmail: 'alexsmith@example.org',
-  },
-  jobPositionTitle: {
-    title: 'JOB TITLE',
-  },
-  jobPositionPurpose: {
-    purpose: 'JOB PURPOSE',
-  },
-  jobPositionLocation: {
-    countryCode: 'SE',
-    postalCode: '11356',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  },
-  classification: {
-    scheduleType: 'part',
-    duration: 'temporary',
-    scheduleSummaryText: 'Schedule Summary',
-    durationSummaryText: 'Duration Summary',
-    termLength: 2,
-  },
-  compensationDescription: {
-    currency: 'SEK',
-    salaryType: 1,
-    benefits: 'bennies',
-    summary: 'summary text',
-  },
-  qualificationsRequiredSummary: {
-    summary: 'Summary of qualifications',
-  },
-  qualification: [{
-    type: 'license',
-    description: 'DriversLicense',
-    category: 'B',
+  howToApply: [{
   }, {
-    type: 'experience',
-    yearsOfExperience: 1,
-  }, {
-    type: 'equipment',
-    description: 'Car',
+    distribute: 'external',
   }],
   qualificationsPreferredSummary: {
     summary: 'PREFERRED QUALIFICATIONS',
@@ -180,9 +98,174 @@ const invalidParams = {
   hiringOrgDescription: {
     description: 'HIRING ORG DESCRIPTION',
   },
-  occupationGroup: {
+  occupationGroup: [{
     code: 12345,
+  }, {
+    code: 12345,
+    codename: 'OccupationNameID'
+  }],
+};
+
+const invalidParams = {
+  sender: [{
+    id: 1,
+  }, {
+    email:'foo@example.org'
+  }],
+  transaction: { },
+  jobPositionPosting: [
+    { },
+    { id: '123-456', status: 'foo' },
+  ],
+  hiringOrg: [{
+    name: 'ORG NAME',
+  }, {
+    id: '46-XXYYZZ-XXYY-1',
+  }],
+  hiringOrgContact: [{
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+  }],
+  postDetail: [{
+    endDate: '2018-12-01',
+    recruiterName: 'Alex Smith',
+  }, {
+    startDate: '2018-09-01',
+    recruiterName: 'Alex Smith',
+  }, {
+    startDate: '2018-09-01',
+    endDate: '2018-12-01',
+  }, {
+    startDate: '2018-09-01',
+    endDate: '2018-12-01',
+    recruiterName: 'Alex Smith',
+    recruiterEmail: 'not an email',
+  }, {
+    startDate: 'not a date',
+    endDate: '2018-12-01',
+    recruiterName: 'Alex Smith',
+    recruiterEmail: 'alexsmith@example.org',
+  }, {
+    startDate: '2018-09-01',
+    endDate: 'not a date',
+    recruiterName: 'Alex Smith',
+    recruiterEmail: 'alexsmith@example.org',
+  }, {
+  }],
+  jobPositionTitle: { },
+  jobPositionPurpose: { },
+  jobPositionLocation: [{
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    streetName: 'Birger Jarlsgatan 58',
+  }, {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+  }],
+  classification: [{
+    duration: 'temporary',
+    termLength: 2,
+  }, {
+    scheduleType: 'part',
+    termLength: 2,
+  }, {
+    scheduleType: 'part',
+    duration: 'temporary',
+  }, {
+    scheduleType: 'not valid',
+    duration: 'temporary',
+    termLength: 2,
+  }, {
+    scheduleType: 'part',
+    duration: 'not valid',
+    termLength: 2,
+  }],
+  compensationDescription: [{
+    currency: 'SEK',
+  }, {
+    salaryType: 1,
+  }, {
+    currency: 'SEK',
+    salaryType: 'not valid',
+  }, {
+    currency: 'SEK',
+    salaryType: 9,
+  }],
+  qualificationsRequiredSummary: {
+    summary: 1,
   },
+  qualification: [{
+    type: 'license',
+    category: 'B',
+  }, {
+    type: 'license',
+    description: 'DriversLicense',
+  }, {
+    type: 'experience',
+  }, {
+    type: 'equipment',
+  }, {
+    type: 'not valid',
+  }],
+  howToApply: {
+    distribute: 'not valid',
+  },
+  qualificationsPreferredSummary: { },
+  byWeb: {
+    url: 'not a valid url',
+  },
+  numberToFill: [{
+  }, {
+    number: 'foo',
+  }],
+  hiringOrgDescription: { },
+  occupationGroup: [{
+  }, {
+    code: 'not a number',
+  }, {
+    code: 12345,
+    codename: 'invalid codename',
+  }],
 };
 
 describe('PlatsbankenVacancy', () => {
@@ -211,7 +294,6 @@ describe('PlatsbankenVacancy', () => {
     });
   });
 
-  /*
   describe('check invalid parameters are not accepted', () => {
     const request = Vacancy();
 
@@ -224,18 +306,17 @@ describe('PlatsbankenVacancy', () => {
         p.forEach((p2) => {
           const pstring = util.inspect(p2);
           it(`${vMethod} should not accept ${pstring} `, () => {
-            expect(() => request[vMethod](p2)).to.not.throw();
+            expect(() => request[vMethod](p2)).to.throw();
           });
         });
       } else {
         const pstring = util.inspect(invalidParams[method]);
-        it(`${vMethod} should accept ${pstring} `, () => {
-          expect(() => request[vMethod](p)).to.not.throw();
+        it(`${vMethod} should no accept ${pstring} `, () => {
+          expect(() => request[vMethod](p)).to.throw();
         });
       }
     });
   });
-  */
 
   describe('sender()', () => {
     // rebuild on every set of method tests

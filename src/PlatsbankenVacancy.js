@@ -162,12 +162,12 @@ const PlatsbankenVacancy = ({
   */
   jsonJobPositionPosting: ({
     id: JobPositionPostingId,
-    status,
+    status = 'active',
   } = { status: 'active' }) => ({
     JobPositionPosting: [{ _attr: { status } }, { JobPositionPostingId }],
   }),
 
-  validateJobPositionPosting: ({ id, status }) => {
+  validateJobPositionPosting({ id, status = 'active' } = { status: 'active' }) {
     Joi.assert({ id, status }, {
       id: Joi.string().max(50).required(),
       status: Joi.valid(['active', 'inactive']),
@@ -1192,11 +1192,14 @@ const PlatsbankenVacancy = ({
     HowToApply: [{ _attr: { distribute } }],
   }),
 
-  validateHowToApply: ({ distribute }) => {
-    Joi.assert({ distribute }, { distribute: Joi.string().required() });
+  validateHowToApply: ({ distribute = 'external' } = { distribute: 'external' }) => {
+    console.log('------------------');
+    console.log(distribute);
+    console.log('------------------');
+    Joi.assert({ distribute }, { distribute: Joi.string().valid('external').required() });
   },
 
-  howToApply({ distribute } = { distribute: 'external' }) {
+  howToApply({ distribute = 'external' } = { distribute: 'external' }) {
     this.validateHowToApply({ distribute });
     if (!this.ref.JobPositionPosting) {
       throw new Error('HowToApply must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
@@ -1354,8 +1357,11 @@ const PlatsbankenVacancy = ({
     OccupationGroup: [{ _attr: { code, codename } }],
   }),
 
-  validateOccupationGroup: ({ code }) => {
-    Joi.assert({ code }, { code: Joi.number().required() });
+  validateOccupationGroup: ({ code, codename = 'OccupationNameID' } = {}) => {
+    Joi.assert({ code, codename }, {
+      code: Joi.number().required(),
+      codename: Joi.string().valid('OccupationNameID').optional(),
+    });
   },
 
   occupationGroup({ code, codename = 'OccupationNameID' } = {}) {
