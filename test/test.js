@@ -2,6 +2,7 @@ const util = require('util');
 const chai = require('chai');
 
 chai.use(require('chai-things'));
+chai.use(require('chai-xml'));
 
 const expect = chai.expect;
 const Vacancy = require('../build/PlatsbankenVacancy.js');
@@ -381,6 +382,15 @@ describe('PlatsbankenVacancy', () => {
         .include.something.to.have.nested.property('Packet[0].PacketInfo');
       expect(request.json().Envelope)
         .include.something.to.have.nested.property('Packet[1].Payload');
+    });
+  });
+  describe('XML', () => {
+    const request = Vacancy();
+    request.sender(params.sender);
+    request.transaction(params.transaction);
+
+    it('XML should be valid', () => {
+      expect(request.toString()).xml.to.be.valid();
     });
   });
 });
