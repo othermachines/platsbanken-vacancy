@@ -26,8 +26,7 @@ const PlatsbankenVacancy = ({
     Envelope: [{ _attr: { xmlns, version } }],
   },
 
-  toXml: (obj, options = {}) => xml(obj, options),
-  toString() { return this.toXml(this.doc, this.xmlOptions); },
+  toString() { return xml(this.doc, this.xmlOptions); },
   json() { return this.doc; },
 
   // writing this:
