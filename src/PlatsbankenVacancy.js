@@ -29,6 +29,16 @@ const PlatsbankenVacancy = ({
   toString() { return xml(this.doc, this.xmlOptions); },
   json() { return this.doc; },
 
+  // Returns the last index in the requested Array
+  // This is based off elements tracked in this.ref,
+  // which are the only elements we are adding multiple
+  // packages to. Mostly useful for testing, so you don't
+  // need to keep track of which index an element has been
+  // added at
+  index(el) {
+    return this.ref[el].length - 1;
+  },
+
   // writing this:
   //   this.ref.Payload = this.ref.Packet[this.ref.Packet.length - 1].Payload;
   // to manage references is a pain
