@@ -494,26 +494,494 @@ describe('PlatsbankenVacancy', () => {
     });
   });
 
-  /*
-  describe('XXX()', () => {
+  describe('jobPositionInformation()', () => {
     const request = Vacancy();
     request.sender(param('sender'))
-      .transaction(param('transaction'))
-      .jobPositionPosting(param('jobPositionPosting'))
-      .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'));
+      .transaction(param('transaction'));
 
-    it('should add a XXX element to XXX', () => {
+    // should fail
+    it('should require jobPositionPosting() to have been called first', () => {
+      expect(() =>
+        request.jobPositionInformation(),
+      ).to.throw();
+    });
+
+    it('should add a JobPositionInformation element to JobPositionPosting', () => {
+      request.jobPositionPosting(param('jobPositionPosting'))
+        .jobPositionInformation();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('JobPositionInformation');
+    });
+  });
+
+  describe('jobPositionTitle()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    // pass
+    it('should add a JobPositionTitle element to JobPositionInformation', () => {
+      request.jobPositionPosting(param('jobPositionPosting'))
+        .jobPositionTitle(param('jobPositionTitle'));
       expect(request.json()
         .Envelope[request.index('Envelope')]
         .Packet[request.index('Packet')]
         .Payload[request.index('Payload')]
         .JobPositionPosting[request.index('JobPositionPosting')]
-        .HiringOrg)
-        .include.something.to.have.property('XXX');
+        .JobPositionInformation)
+        .include.something.to.have.property('JobPositionTitle');
     });
   });
-  */
+
+  describe('jobPositionDescription()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    // pass
+    it('should add a JobPositionDescription element to JobPositionInformation', () => {
+      request.jobPositionPosting(param('jobPositionPosting'))
+        .jobPositionDescription();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation)
+        .include.something.to.have.property('JobPositionDescription');
+    });
+  });
+
+  describe('jobPositionPurpose()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    // pass
+    it('should add a JobPositionPurpose element to JobPositionInformation', () => {
+      request.jobPositionPurpose(param('jobPositionPurpose'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('JobPositionPurpose');
+    });
+  });
+
+  describe('jobPositionLocation()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a JobPositionLocation element to JobPositionDescription', () => {
+      request.jobPositionLocation(param('jobPositionLocation'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('JobPositionLocation');
+    });
+  });
+
+  describe('classification()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a Classification element to JobPositionDescription', () => {
+      request.classification(param('classification'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('Classification');
+    });
+  });
+
+  describe('compensationDescription()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a CompensationDescription element to JobPositionDescription', () => {
+      request.compensationDescription(param('compensationDescription'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('CompensationDescription');
+    });
+  });
+
+  describe('qualificationsRequired()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a JobPositionInformation element to JobPositionPosting', () => {
+      request.compensationDescription(param('compensationDescription'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('CompensationDescription');
+    });
+
+    it('should add a JobPositionRequirements element to JobPositionInformation', () => {
+      request.compensationDescription(param('compensationDescription'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionDescription)
+        .include.something.to.have.property('CompensationDescription');
+    });
+  });
+
+  describe('qualificationsRequired()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionInformation()
+      .jobPositionRequirements();
+
+    it('should add a QualificationsRequired element to JobPositionRequirements', () => {
+      request.qualificationsRequired();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionRequirements)
+        .include.something.to.have.property('QualificationsRequired');
+    });
+  });
+
+  describe('qualificationsRequiredSummary()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a P element to QualificationsRequired', () => {
+      request.qualificationsRequiredSummary(param('qualificationsRequiredSummary'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionRequirements[request.index('JobPositionRequirements')]
+        .QualificationsRequired)
+        .include.something.to.have.property('P');
+    });
+  });
+
+  describe('qualification()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'))
+      .qualificationsRequiredSummary(param('qualificationsRequiredSummary'));
+
+    it('should add a Qualification tag to QualificationsRequired', () => {
+      request.qualification(param('qualification'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionRequirements[request.index('JobPositionRequirements')]
+        .QualificationsRequired)
+        .include.something.to.have.property('Qualification');
+    });
+  });
+
+  describe('qualificationsPreferred()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'))
+      .qualificationsRequiredSummary(param('qualificationsRequiredSummary'))
+      .qualification(param('qualification'));
+
+    // should fail
+    // no need to check - parent created if needed
+
+    it('should add a QualificationsPreferred element to JobPositionRequirements', () => {
+      request.qualificationsPreferred();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionRequirements)
+        .include.something.to.have.property('QualificationsPreferred');
+    });
+  });
+
+  describe('qualificationsPreferredSummary()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'))
+      .qualificationsRequiredSummary(param('qualificationsRequiredSummary'))
+      .qualification(param('qualification'));
+
+    it('should add a P element to QualificationsPreferred', () => {
+      request.qualificationsPreferredSummary(param('qualificationsPreferredSummary'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JobPositionInformation[request.index('JobPositionInformation')]
+        .JobPositionRequirements[request.index('JobPositionRequirements')]
+        .QualificationsPreferred)
+        .include.something.to.have.property('P');
+    });
+  });
+
+  describe('howToApply()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'));
+
+    it('should add a HowToApply element to JobPositionPosting', () => {
+      request.howToApply();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('HowToApply');
+    });
+  });
+
+  describe('applicationMethods()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .howToApply();
+
+    it('should add an ApplicationMethods element to HowToApply', () => {
+      request.applicationMethods();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HowToApply)
+        .include.something.to.have.property('ApplicationMethods');
+    });
+  });
+
+  describe('byWeb()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .byWeb();
+
+    it('should add a ByWeb element to ApplicationMethods', () => {
+      request.byWeb(param('byWeb'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HowToApply[request.index('HowToApply')]
+        .ApplicationMethods)
+        .include.something.to.have.property('ByWeb');
+    });
+  });
+
+  describe('numberToFill()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .numberToFill(param('numberToFill'));
+
+    it('should add a NumberToFill element to JobPositionPosting', () => {
+      request.byWeb(param('byWeb'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('NumberToFill');
+    });
+  });
+
+  describe('jppExtension()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'));
+
+    it('should add a JPPExtension element to JobPositionPosting', () => {
+      request.jppExtension();
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('JPPExtension');
+    });
+  });
+
+  describe('hiringOrgDescription()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'));
+
+    it('should add a HiringOrgDescription element to JPPExtension', () => {
+      request.hiringOrgDescription(param('hiringOrgDescription'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension)
+        .include.something.to.have.property('HiringOrgDescription');
+    });
+  });
+
+  describe('occupationGroup()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'));
+
+    it('should add an OccupationGroup element to JPPExtension', () => {
+      request.occupationGroup(param('occupationGroup'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension)
+        .include.something.to.have.property('OccupationGroup');
+    });
+  });
 
   describe('XML', () => {
     const request = Vacancy();
