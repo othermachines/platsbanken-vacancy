@@ -7,6 +7,12 @@ chai.use(require('chai-xml'));
 const expect = chai.expect;
 const Vacancy = require('../build/PlatsbankenVacancy.js');
 
+dump = (obj) => {
+  console.log('-'.repeat(80));
+  console.log(util.inspect(obj, false, null, true));
+  console.log('-'.repeat(80));
+};
+
 // We will be building new PlatsbankenVacancies throughout, and sometimes this
 // requires calling a series of methods to reach the state we want to be at.
 // Rather than repeatedly specify valid parameters for each method, set
@@ -16,6 +22,7 @@ const Vacancy = require('../build/PlatsbankenVacancy.js');
 // accepts valid parameters. In cases where there are variations
 // (e.g., jobPositionPosting() or qualification(), different sets can be
 // set in an array.
+
 const params = {
   sender: { id: 1, email: 'foo@example.org' },
   transaction: { id: 'valid' },
@@ -103,15 +110,22 @@ const params = {
     code: 12345,
   }, {
     code: 12345,
-    codename: 'OccupationNameID'
+    codename: 'OccupationNameID',
   }],
+};
+
+const param = (name) => {
+  if (Array.isArray(params[name])) {
+    return params[name][0];
+  }
+  return params[name];
 };
 
 const invalidParams = {
   sender: [{
     id: 1,
   }, {
-    email:'foo@example.org'
+    email: 'foo@example.org',
   }],
   transaction: { },
   jobPositionPosting: [
@@ -325,7 +339,7 @@ describe('PlatsbankenVacancy', () => {
 
     // should pass
     it('should add a Sender tag with attributes to the Envelope', () => {
-      request.sender({ id: 1, email: 'foo@example.org' });
+      request.sender(param('sender'));
       expect(request.json().Envelope)
         .include.something.to.have.property('Sender');
       expect(request.json().Envelope)
@@ -339,11 +353,11 @@ describe('PlatsbankenVacancy', () => {
 
   describe('transaction()', () => {
     const request = Vacancy();
-    request.sender(params.sender);
+    request.sender(param('sender'));
 
     // should fail
     it('should add the TransactInfo tag set to the Envelope', () => {
-      request.transaction(params.transaction);
+      request.transaction(param('transaction'));
       expect(request.json().Envelope)
         .include.something.to.have.property('TransactInfo');
       expect(request.json().Envelope)
@@ -364,47 +378,140 @@ describe('PlatsbankenVacancy', () => {
   });
   describe('jobPositionPosting()', () => {
     const request = Vacancy();
-    request.sender(params.sender);
-    request.transaction(params.transaction);
+    request.sender(param('sender'));
+    request.transaction(param('transaction'));
 
     // should fail
     it('should require transaction() to have been called first', () => {
       expect(() => {
-        Vacancy().jobPositionPosting(params.jobPositionPosting);
+        request.jobPositionPosting(params.jobPositionPosting);
       }).to.throw();
     });
 
+    request.jobPositionPosting(param('jobPositionPosting'));
+
     // should pass
-    it('should add a Packet tag set to the Envelope', () => {
-      expect(request.json().Envelope)
-        .include.something.to.have.property('Packet');
-      expect(request.json().Envelope)
-        .include.something.to.have.nested.property('Packet[0].PacketInfo');
-      expect(request.json().Envelope)
-        .include.something.to.have.nested.property('Packet[1].Payload');
+    it('should add a JobPositionPosting element to the Payload', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload)
+        .include.something.to.have.property('JobPositionPosting');
     });
   });
+
+  describe('hiringOrg()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'));
+    request.transaction(param('transaction'));
+
+    // should fail
+    it('should require jobPositionPosting() to have been called first', () => {
+      expect(() =>
+        request.hiringOrg(param('hiringOrg')),
+      ).to.throw();
+    });
+
+    // should pass
+    it('should add a HiringOrg tag set to JobPositionPosting', () => {
+      request.jobPositionPosting(param('jobPositionPosting'));
+      request.hiringOrg(param('hiringOrg'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('HiringOrg');
+
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
+        .include.something.to.have.property('HiringOrgName');
+
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
+        .include.something.to.have.property('HiringOrgId');
+    });
+  });
+
+  describe('hiringOrgContact()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'));
+
+    // should fail
+    it('should require hiringOrg() to have been called first', () => {
+      expect(() =>
+        request.hiringOrgContact(param('hiringOrgContact')),
+      ).to.throw();
+    });
+
+    // should pass
+    it('should add a Contact element to HiringOrg', () => {
+      request.hiringOrg(param('hiringOrg'));
+      request.hiringOrgContact(param('hiringOrgContact'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
+        .include.something.to.have.property('Contact');
+
+      // TODO more comprehensive coverage on Contact
+    });
+  });
+  
+  /*
+  describe('XXX()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'));
+
+    it('should add a XXX element to XXX', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
+        .include.something.to.have.property('XXX');
+    });
+  });
+  */
+
   describe('XML', () => {
     const request = Vacancy();
-    request.sender(params.sender)
-      .transaction(params.transaction)
-      .jobPositionPosting(params.jobPositionPosting[0])
-      .hiringOrg(params.hiringOrg)
-      .hiringOrgContact(params.hiringOrgContact)
-      .postDetail(params.postDetail)
-      .jobPositionTitle(params.jobPositionTitle)
-      .jobPositionPurpose(params.jobPositionPurpose)
-      .jobPositionLocation(params.jobPositionLocation)
-      .classification(params.classification)
-      .qualificationsRequiredSummary(params.qualificationsRequiredSummary)
-      .qualification(params.qualification[0])
-      .qualification(params.qualification[1])
-      .qualification(params.qualification[2])
-      .qualificationsPreferredSummary(params.qualificationsPreferredSummary)
-      .byWeb(params.byWeb)
-      .numberToFill(params.numberToFill)
-      .hiringOrgDescription(params.hiringOrgDescription)
-      .occupationGroup(params.occupationGroup[0])
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .hiringOrg(param('hiringOrg'))
+      .hiringOrgContact(param('hiringOrgContact'))
+      .postDetail(param('postDetail'))
+      .jobPositionTitle(param('jobPositionTitle'))
+      .jobPositionPurpose(param('jobPositionPurpose'))
+      .jobPositionLocation(param('jobPositionLocation'))
+      .classification(param('classification'))
+      .qualificationsRequiredSummary(param('qualificationsRequiredSummary'))
+      .qualification(param('qualification'))
+      .qualification(param('qualification'))
+      .qualification(param('qualification'))
+      .qualificationsPreferredSummary(param('qualificationsPreferredSummary'))
+      .byWeb(param('byWeb'))
+      .numberToFill(param('numberToFill'))
+      .hiringOrgDescription(param('hiringOrgDescription'))
+      .occupationGroup(param('occupationGroup'));
 
     it('XML should be valid', () => {
       expect(request.toString()).xml.to.be.valid();
