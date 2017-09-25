@@ -469,7 +469,31 @@ describe('PlatsbankenVacancy', () => {
       // TODO more comprehensive coverage on Contact
     });
   });
-  
+
+  describe('postDetail()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'));
+
+    // should fail
+    it('should require jobPositionPosting() to have been called first', () => {
+      expect(() =>
+        request.postDetail(param('postDetail')),
+      ).to.throw();
+    });
+
+    it('should add a PostDetail element to JobPositionPosting', () => {
+      request.jobPositionPosting(param('jobPositionPosting'))
+        .postDetail(param('postDetail'));
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting)
+        .include.something.to.have.property('PostDetail');
+    });
+  });
+
   /*
   describe('XXX()', () => {
     const request = Vacancy();
