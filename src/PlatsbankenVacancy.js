@@ -218,9 +218,9 @@ const PlatsbankenVacancy = ({
   jsonHiringOrg: ({
     name: HiringOrgName,
     id: HiringOrgId,
-    url: Website,
+    url: WebSite,
   } = {}) => ({
-    HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { Website }],
+    HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { WebSite }],
   }),
 
   validateHiringOrg: ({ name, id, url }) => {
