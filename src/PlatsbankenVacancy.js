@@ -757,6 +757,12 @@ const PlatsbankenVacancy = ({
       duration,
       termLength,
     });
+
+    // make sure we have the required parent element
+    if (!this.ref.JobPositionDescription) {
+      this.jobPositionDescription();
+    }
+
     this.ref.JobPositionDescription.push(this.jsonClassification({
       scheduleType,
       duration,
