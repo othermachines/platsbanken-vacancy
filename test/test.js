@@ -1,3 +1,10 @@
+/*
+* SCUTWORK
+* 1) Unit tests for checking if children are correctly attached to parents
+* could use some simplification. No need to call every preceeding method
+* for most tests.
+*/
+
 const util = require('util');
 const chai = require('chai');
 
