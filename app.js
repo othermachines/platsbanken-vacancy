@@ -4,11 +4,13 @@ const http = require('http');
 
 const util = require('util');
 
-const hostname = 'localhost';
+// const hostname = 'localhost';
+const hostname = 'api.arbetsformedlingen.se';
 const port = 80;
 const env = 'development';
 
-const baseUrl = 'http://api.arbetsformedlingen.se/ledigtarbete';
+// const baseUrl = 'http://api.arbetsformedlingen.se/ledigtarbete';
+const baseUrl = '/ledigtarbete';
 const routes = {
   postJobUrl: `${baseUrl}/apiledigtarbete/hrxml`,
   testPostJobUrl: `${baseUrl}/apiledigtarbete/test/hrxml`,
@@ -126,13 +128,24 @@ try {
   }
   process.exit(1);
 }
-
+const xmlString = request.toString();
+/*
 console.log(util.inspect(request.doc, false, null, true));
 console.log();
 console.log('-'.repeat(80));
 console.log();
 console.log(`${request}`);
 process.exit();
+*/
+
+console.log('-'.repeat(80));
+console.log(`HOSTNAME: ${hostname}`);
+console.log(`PATH: ${path}`);
+console.log(`PORT: ${port}`);
+
+console.log('-'.repeat(80));
+console.log(xmlString);
+console.log('-'.repeat(80));
 
 const httpOptions = {
   hostname,
