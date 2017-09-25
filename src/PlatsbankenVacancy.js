@@ -11,7 +11,7 @@ const xml = require('xml');
 const Joi = require('joi');
 
 const PlatsbankenVacancy = ({
-  xmlns = 'http://api.arbetsformedlingen.se/ledigtarbete',
+  xmlns = 'http://arbetsformedlingen.se/LedigtArbete',
   version = '0.52',
   xmlOptions = { indent: '  ' },
 } = {}) => ({
