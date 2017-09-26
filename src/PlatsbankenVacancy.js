@@ -820,7 +820,7 @@ const PlatsbankenVacancy = ({
     }, {
       SummaryText,
     }, {
-      Benefits: [{ P }],
+      BenefitsDescription: [{ P }],
     }],
   }),
 
