@@ -815,7 +815,7 @@ const PlatsbankenVacancy = ({
   } = {}) => ({
     CompensationDescription: [{
       Pay: [{
-        SalaryMonthly: [{ _attr: { currency } }, SalaryMonthly ],
+        SalaryMonthly: [{ _attr: { currency } }, SalaryMonthly],
       }],
     }, {
       SummaryText,
