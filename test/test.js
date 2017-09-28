@@ -107,6 +107,9 @@ const params = {
     url: 'http://example.org',
     summary: 'summary text',
   },
+  byEmail: {
+    email: 'foo@example.org',
+  },
   numberToFill: {
     number: 1,
   },
@@ -276,6 +279,9 @@ const invalidParams = {
   byWeb: {
     url: 'not a valid url',
   },
+  byEmail: {
+    email: 'not a valid email',
+  },
   numberToFill: [{
   }, {
     number: 'foo',
@@ -333,7 +339,7 @@ describe('PlatsbankenVacancy', () => {
         });
       } else {
         const pstring = util.inspect(invalidParams[method]);
-        it(`${vMethod} should no accept ${pstring} `, () => {
+        it(`${vMethod} should not accept ${pstring} `, () => {
           expect(() => request[vMethod](p)).to.throw();
         });
       }
@@ -919,6 +925,37 @@ describe('PlatsbankenVacancy', () => {
     });
   });
 
+  describe('byEmail()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .byEmail();
+
+    it('should add a ByEmail element to ApplicationMethods', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HowToApply[request.index('HowToApply')]
+        .ApplicationMethods)
+        .include.something.to.have.property('ByEmail');
+    });
+
+    it('should add an Email element to ByEmail', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HowToApply[request.index('HowToApply')]
+        .ApplicationMethods[request.index('ApplicationMethods')]
+        .ByEmail)
+        .include.something.to.have.property('Email');
+    });
+  });
+
   describe('numberToFill()', () => {
     const request = Vacancy();
     request.sender(param('sender'))
@@ -927,7 +964,6 @@ describe('PlatsbankenVacancy', () => {
       .numberToFill(param('numberToFill'));
 
     it('should add a NumberToFill element to JobPositionPosting', () => {
-      request.byWeb(param('byWeb'));
       expect(request.json()
         .Envelope[request.index('Envelope')]
         .Packet[request.index('Packet')]

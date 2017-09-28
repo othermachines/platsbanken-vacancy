@@ -107,6 +107,9 @@ try {
       url: 'http://example.org',
       summary: 'summary text',
     })
+    .byEmail({
+      email: 'foo@example.org',
+    })
     .numberToFill({
       number: 1,
     })
@@ -129,14 +132,14 @@ try {
   process.exit(1);
 }
 const xmlString = request.toString();
-/*
+
 console.log(util.inspect(request.doc, false, null, true));
 console.log();
 console.log('-'.repeat(80));
 console.log();
 console.log(`${request}`);
 process.exit();
-*/
+
 
 console.log('-'.repeat(80));
 console.log(`HOSTNAME: ${hostname}`);

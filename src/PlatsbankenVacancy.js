@@ -1279,6 +1279,39 @@ const PlatsbankenVacancy = ({
 
   /*
   * HRXML 0.99
+  * E-mail address where applicants can send application.
+  * If present, the option 'Apply by e-post' is enabled in the job advert.
+  *
+  * Max 100 characters
+  */
+  jsonByEmail: ({
+    email: Email,
+  } = {}) => ({
+    ByEmail: [{ Email }],
+  }),
+
+  validateByEmail: ({ email }) => {
+    Joi.assert({
+      email,
+    }, {
+      email: Joi.string().max(100).email(),
+    });
+  },
+
+  byEmail({ email } = {}) {
+    this.validateByEmail({ email });
+
+    if (!this.ref.ApplicationMethods) {
+      this.applicationMethods();
+    }
+
+    this.ref.ApplicationMethods.push(this.jsonByEmail({ email }));
+
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
   * <NumberToFill>
   * Number of positions to be filled.
   * Any number between 1 and 999.
