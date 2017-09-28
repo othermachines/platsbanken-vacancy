@@ -61,6 +61,8 @@ const PlatsbankenVacancy = ({
   * Your company's customer number at Arbetsformedlingen
   * Customer number is supplied by Arbetsförmedlingen.
   * Note: this is an element attribute.
+  *
+  * This will be an eight digit number, treated as a string
   */
 
   /*
@@ -75,7 +77,8 @@ const PlatsbankenVacancy = ({
 
   validateSender: ({ id, email }) => {
     Joi.assert({ id, email }, {
-      id: Joi.number().integer().positive().required(),
+      // id: Joi.number().integer().positive().required(),
+      id: Joi.string.lengthOf(8).required(),
       email: Joi.string().email().required(),
     });
   },
@@ -1285,9 +1288,9 @@ const PlatsbankenVacancy = ({
   * Max 100 characters
   */
   jsonByEmail: ({
-    email: Email,
+    email,
   } = {}) => ({
-    ByEmail: [{ Email }],
+    ByEmail: [{ 'E-mail': email }],
   }),
 
   validateByEmail: ({ email }) => {

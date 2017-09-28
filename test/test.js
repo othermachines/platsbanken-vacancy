@@ -31,7 +31,7 @@ dump = (obj) => {
 // set in an array.
 
 const params = {
-  sender: { id: 1, email: 'foo@example.org' },
+  sender: { id: '12345678', email: 'foo@example.org' },
   transaction: { id: 'valid' },
   jobPositionPosting: [
     { id: '123-456' },
@@ -943,7 +943,7 @@ describe('PlatsbankenVacancy', () => {
         .include.something.to.have.property('ByEmail');
     });
 
-    it('should add an Email element to ByEmail', () => {
+    it('should add an E-mail element to ByEmail', () => {
       expect(request.json()
         .Envelope[request.index('Envelope')]
         .Packet[request.index('Packet')]
@@ -952,7 +952,7 @@ describe('PlatsbankenVacancy', () => {
         .HowToApply[request.index('HowToApply')]
         .ApplicationMethods[request.index('ApplicationMethods')]
         .ByEmail)
-        .include.something.to.have.property('Email');
+        .include.something.to.have.property('E-mail');
     });
   });
 
