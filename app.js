@@ -1,8 +1,10 @@
 const Vacancy = require('./build/PlatsbankenVacancy.js');
-
 const http = require('http');
-
 const util = require('util');
+
+const config = require('config');
+
+const identity = config.get('identity');
 
 // const hostname = 'localhost';
 const hostname = 'api.arbetsformedlingen.se';
@@ -24,22 +26,23 @@ const options = {
 
 const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
 
+
 try {
   request
     .sender({
-      id: 1,
+      id: identity.customerNumber,
       email: 'foo@bar.com',
     })
     .transaction({
       id: 'ID HERE',
     })
     .jobPositionPosting({
-      id: '123-456',
+      id: `${identity.orgNumber}-123`,
       status: 'active',
     })
     .hiringOrg({
-      name: 'ORG NAME',
-      id: '46-XXYYZZ-XXYY-1',
+      name: identity.companyName,
+      id: identity.orgNumber,
       url: 'http://example.org',
     })
     .hiringOrgContact({
@@ -117,7 +120,7 @@ try {
       description: 'HIRING ORG DESCRIPTION',
     })
     .occupationGroup({
-      code: 12345,
+      code: 7652,
     });
 } catch (err) {
   console.log(err);
@@ -132,14 +135,13 @@ try {
   process.exit(1);
 }
 const xmlString = request.toString();
-
+/*
 console.log(util.inspect(request.doc, false, null, true));
 console.log();
 console.log('-'.repeat(80));
 console.log();
 console.log(`${request}`);
-process.exit();
-
+*/
 
 console.log('-'.repeat(80));
 console.log(`HOSTNAME: ${hostname}`);
@@ -149,6 +151,8 @@ console.log(`PORT: ${port}`);
 console.log('-'.repeat(80));
 console.log(xmlString);
 console.log('-'.repeat(80));
+
+process.exit();
 
 const httpOptions = {
   hostname,
