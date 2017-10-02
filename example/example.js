@@ -1,31 +1,43 @@
-const Vacancy = require('./build/PlatsbankenVacancy.js');
+/*
+* $ export NODE_ENV=production
+*   Setting to 'production' will submit to the live server.
+*   Defaults to 'development'.
+* $ node example.js
+*   With no arguments, will send XML document to STDOUT and exit.
+* $ node example.js json
+*   outputs json document (before being transformed to XML) and exits
+*   without submitting.
+* $ node example.js submit
+*   submits posting to the Platsbanken server (live or test, per NODE_ENV).
+*/
+
+const Vacancy = require('../build/PlatsbankenVacancy.js');
 const http = require('http');
 const util = require('util');
 
 const config = require('config');
 
+const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const identity = config.get('identity');
 
-// const hostname = 'localhost';
 const hostname = 'api.arbetsformedlingen.se';
 const port = 80;
-const env = 'development';
 
-// const baseUrl = 'http://api.arbetsformedlingen.se/ledigtarbete';
-const baseUrl = '/ledigtarbete';
 const routes = {
-  postJobUrl: `${baseUrl}/apiledigtarbete/hrxml`,
-  testPostJobUrl: `${baseUrl}/apiledigtarbete/test/hrxml`,
+  postJobLive: '/ledigtarbete/apiledigtarbete/hrxml',
+  postJobTest: '/ledigtarbete/apiledigtarbete/test/hrxml',
 };
 
-const path = env === 'production' ? routes.postJobUrl : routes.testPostJobUrl;
+const path = env === 'production' ? routes.postJobLive : routes.postJobTest;
+
+const submit = process.argv[2] === 'submit';
+const json = process.argv[2] === 'json';
 
 const options = {
   indent: '  ',
 };
 
 const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
-
 
 try {
   request
@@ -34,7 +46,7 @@ try {
       email: 'foo@bar.com',
     })
     .transaction({
-      id: 'ID HERE',
+      id: 'TRANSACTION GUID',
     })
     .jobPositionPosting({
       id: `${identity.orgNumber}-123`,
@@ -104,7 +116,7 @@ try {
       summary: 'PREFERRED QUALIFICATIONS',
     })
     // applicationMethods() not neccessary, will be called by byWeb()
-    // included for clarity
+    // or byEmail(), included for clarity
     .applicationMethods()
     .byWeb({
       url: 'http://example.org',
@@ -124,65 +136,58 @@ try {
     });
 } catch (err) {
   console.log(err);
-  console.log(err.message);
-  console.log(err.details);
   if (err.isJoi) {
-    console.log('-----');
-    console.log(err.details[0].context);
     console.log('-----');
     console.log(err.annotate());
   }
   process.exit(1);
 }
 const xmlString = request.toString();
-/*
-console.log(util.inspect(request.doc, false, null, true));
-console.log();
-console.log('-'.repeat(80));
-console.log();
-console.log(`${request}`);
-*/
 
-console.log('-'.repeat(80));
-console.log(`HOSTNAME: ${hostname}`);
-console.log(`PATH: ${path}`);
-console.log(`PORT: ${port}`);
-
-console.log('-'.repeat(80));
 console.log(xmlString);
-console.log('-'.repeat(80));
 
-process.exit();
+if (json) {
+  console.log('-'.repeat(80));
+  console.log(util.inspect(request.doc, false, null, true));
+  console.log('-'.repeat(80));
+  process.exit(1);
+}
 
-const httpOptions = {
-  hostname,
-  port,
-  path,
-  method: 'POST',
-  headers: {
-    'Content-Type': 'text/xml',
-    'Content-Length': xmlString.length,
-  },
-};
+if (submit) {
+  console.log('-'.repeat(80));
+  console.log(`HOSTNAME: ${hostname}`);
+  console.log(`PATH: ${path}`);
+  console.log(`PORT: ${port}`);
+  console.log('-'.repeat(80));
 
-const req = http.request(httpOptions, (res) => {
-  console.log(`STATUS: ${res.statusCode}`);
-  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-  res.setEncoding('utf8');
-  res.on('data', (chunk) => {
-    console.log(`BODY: ${chunk}`);
+  const httpOptions = {
+    hostname,
+    port,
+    path,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/xml',
+      'Content-Length': xmlString.length,
+    },
+  };
+
+  const req = http.request(httpOptions, (res) => {
+    console.log(`STATUS: ${res.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+    res.setEncoding('utf8');
+    res.on('data', (chunk) => {
+      console.log(`BODY: ${chunk}`);
+    });
+
+    res.on('end', () => {
+      console.log('No more data in response.');
+    });
   });
 
-  res.on('end', () => {
-    console.log('No more data in response.');
+  req.on('error', (e) => {
+    console.log(`problem with request: ${e.message}`);
   });
-});
 
-req.on('error', (e) => {
-  console.log(`problem with request: ${e.message}`);
-});
-
-// write data to request body
-// xml would have been set somewhere to a complete xml document in the form of a string
-req.write(xmlString);
-req.end();
+  req.write(xmlString);
+  req.end();
+}
