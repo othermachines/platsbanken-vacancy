@@ -1,17 +1,23 @@
 {
-  "name": "jobcentre-api",
-  "version": "1.0.0",
-  "description": "Testing Job Centre API",
-  "main": "app.js",
+  "name": "@othermachines/platsbanken-vacancy",
+  "version": "0.1.0",
+  "description": "API for submitting vacancies to Arbetsförmedlingen Platsbanken (Swedish Employment Agency jobs bank)",
+  "main": "build/platsbanken-vacancy.js",
   "repository": "none",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "babel src --out-dir build --source-maps",
     "watch": "babel src --out-dir build --source-maps --watch",
-    "start": "node app.js"
+    "prepublish": "npm run build"
   },
   "author": "dholmberg@othermachines.com",
   "license": "ISC",
+  "keywords": [
+    "Arbetsförmedlingen",
+    "Platsbanken",
+    "Swedish Employment Agency",
+    "Job Centre"
+  ],
   "dependencies": {
     "http": "0.0.0",
     "joi": "^10.6.0",
