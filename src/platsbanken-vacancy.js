@@ -77,7 +77,7 @@ const platsbankenVacancy = ({
 
   validateSender: ({ id, email }) => {
     Joi.assert({ id, email }, {
-      id: Joi.string.length(8).required(),
+      id: Joi.string().length(8).required(),
       email: Joi.string().email().required(),
     });
   },
