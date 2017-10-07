@@ -4,6 +4,10 @@
   "description": "API for submitting vacancies to Arbetsförmedlingen Platsbanken (Swedish Employment Agency jobs bank)",
   "main": "build/platsbanken-vacancy.js",
   "repository": "none",
+  "files": [
+    "build/",
+    "README.md"
+  ],
   "scripts": {
     "test": "mocha",
     "build": "babel src --out-dir build --source-maps",
