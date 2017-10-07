@@ -11,7 +11,7 @@
 *   submits posting to the Platsbanken server (live or test, per NODE_ENV).
 */
 
-const Vacancy = require('../build/PlatsbankenVacancy.js');
+const vacancy = require('../build/platsbanken-vacancy.js');
 const http = require('http');
 const util = require('util');
 
@@ -37,7 +37,7 @@ const options = {
   indent: '  ',
 };
 
-const request = Vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
+const request = vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
 
 try {
   request
