@@ -27,6 +27,7 @@ npm run watch: `babel src --out-dir build --source-maps --watch`
 npm prepare: `npm run build`
 
 ## Dependencies
+This module was developed against node v8.1.2.
 
 - joi
 - source-map-support

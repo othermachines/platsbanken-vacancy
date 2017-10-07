@@ -1,9 +1,12 @@
 {
   "name": "@othermachines/platsbanken-vacancy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "API for submitting vacancies to Arbetsförmedlingen Platsbanken (Swedish Employment Agency jobs bank)",
   "main": "build/platsbanken-vacancy.js",
-  "repository": "none",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/othermachines/platsbanken-vacancy"
+  },
   "files": [
     "build/",
     "README.md"
@@ -15,7 +18,7 @@
     "prepare": "npm run build"
   },
   "author": "dholmberg@othermachines.com",
-  "license": "ISC",
+  "license": "MIT",
   "keywords": [
     "Arbetsförmedlingen",
     "Platsbanken",
