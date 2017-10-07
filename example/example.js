@@ -71,10 +71,10 @@ try {
       recruiterEmail: 'alexsmith@example.org',
     })
     .jobPositionTitle({
-      title: 'JOB TITLE',
+      title: 'Job Title',
     })
     .jobPositionPurpose({
-      purpose: 'JOB PURPOSE',
+      purpose: 'Job purpose',
     })
     .jobPositionLocation({
       countryCode: 'SE',
@@ -93,7 +93,7 @@ try {
     .compensationDescription({
       currency: 'SEK',
       salaryType: 1,
-      benefits: 'bennies',
+      benefits: 'Benefits',
       summary: 'summary text',
     })
     .qualificationsRequiredSummary({
@@ -113,7 +113,7 @@ try {
       description: 'Car',
     })
     .qualificationsPreferredSummary({
-      summary: 'PREFERRED QUALIFICATIONS',
+      summary: 'Preferred qualifications',
     })
     // applicationMethods() not neccessary, will be called by byWeb()
     // or byEmail(), included for clarity
@@ -129,7 +129,7 @@ try {
       number: 1,
     })
     .hiringOrgDescription({
-      description: 'HIRING ORG DESCRIPTION',
+      description: 'Hiring org description',
     })
     .occupationGroup({
       code: 7652,
