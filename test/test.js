@@ -12,7 +12,7 @@ chai.use(require('chai-things'));
 chai.use(require('chai-xml'));
 
 const expect = chai.expect;
-const Vacancy = require('../build/PlatsbankenVacancy.js');
+const Vacancy = require('../build/platsbanken-vacancy.js');
 
 dump = (obj) => {
   console.log('-'.repeat(80));
