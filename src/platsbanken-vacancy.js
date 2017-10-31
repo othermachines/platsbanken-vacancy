@@ -1093,6 +1093,11 @@ const platsbankenVacancy = ({
   },
 
   qualification({ type, description, yearsOfExperience, category, ...attrs }) {
+    // make sure we have the required parent elements
+    if (!this.ref.QualificationsRequired) {
+      this.qualificationsRequired();
+    }
+
     this.validateQualification({ type, description, yearsOfExperience, category });
     // make sure we have the required parent element
     if (!this.ref.JobPositionRequirements) {
