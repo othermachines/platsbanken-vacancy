@@ -201,5 +201,6 @@ This module is freely distributable under the terms of the
 [MIT license](https://opensource.org/licenses/MIT).
 
 ## Releases
+- 0.1.2 on 2017-11-02: when adding a qualifcation(), create the parent element if it does not exist.
 - 0.1.1 on 2017-10-07: updated meta information.
 - 0.1.0 on 2017-10-07: initial release.
