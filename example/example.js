@@ -49,13 +49,13 @@ try {
       id: 'TRANSACTION GUID',
     })
     .jobPositionPosting({
-      id: `${identity.orgNumber}-123`,
+      id: `${identity.orgNumber}-1234567890-1234567890-1234567890-q`,
       status: 'active',
     })
     .hiringOrg({
       name: identity.companyName,
       id: identity.orgNumber,
-      url: 'http://example.org',
+      url: 'http://example.org?hiringOrg',
     })
     .hiringOrgContact({
       countryCode: 'SE',
@@ -94,7 +94,7 @@ try {
       currency: 'SEK',
       salaryType: 1,
       benefits: 'Benefits',
-      summary: 'summary text',
+      summary: 'Benefits summary text',
     })
     .qualificationsRequiredSummary({
       summary: 'Summary of qualifications',
@@ -106,7 +106,7 @@ try {
     })
     .qualification({
       type: 'experience',
-      yearsOfExperience: 1,
+      yearsOfExperience: 4, // 1 = experience not required, 4 = experience required
     })
     .qualification({
       type: 'equipment',
@@ -119,8 +119,7 @@ try {
     // or byEmail(), included for clarity
     .applicationMethods()
     .byWeb({
-      url: 'http://example.org',
-      summary: 'summary text',
+      url: 'http://example.org?byWeb',
     })
     .byEmail({
       email: 'foo@example.org',
