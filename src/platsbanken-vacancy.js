@@ -1261,31 +1261,28 @@ const platsbankenVacancy = ({
 
   jsonByWeb: ({
     url: URL,
-    summary: SummaryText,
   } = {}) => ({
-    ByWeb: [{ URL }, { SummaryText }],
+    ByWeb: [{ URL }],
   }),
 
-  validateByWeb: ({ url, summary }) => {
+  validateByWeb: ({ url }) => {
     Joi.assert({
       url,
-      summary,
     }, {
       url: Joi.string().max(200).uri({
         scheme: ['http', 'https'],
       }),
-      summary: Joi.string().max(340).optional(),
     });
   },
 
-  byWeb({ url, summary } = {}) {
-    this.validateByWeb({ url, summary });
+  byWeb({ url } = {}) {
+    this.validateByWeb({ url });
 
     if (!this.ref.ApplicationMethods) {
       this.applicationMethods();
     }
 
-    this.ref.ApplicationMethods.push(this.jsonByWeb({ url, summary }));
+    this.ref.ApplicationMethods.push(this.jsonByWeb({ url }));
 
     return this;
   },
