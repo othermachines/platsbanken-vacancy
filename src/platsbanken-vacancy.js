@@ -294,6 +294,12 @@ const platsbankenVacancy = ({
   * StreetName currently is.
   */
 
+  /*
+  * Note: this information does not appear to be displayed anywhere
+  * (and HRXML 0.99 notes is that these elements are "not used"), but
+  * submission will fail with an error if they are omitted.
+  */
+
   jsonPostalAddress: ({
     countryCode: CountryCode,
     postalCode: PostalCode,
