@@ -106,7 +106,8 @@ try {
     })
     .qualification({
       type: 'experience',
-      yearsOfExperience: 4, // 1 = experience not required, 4 = experience required
+      // same as: yearsOfExperience: 4
+      required: true,
     })
     .qualification({
       type: 'equipment',

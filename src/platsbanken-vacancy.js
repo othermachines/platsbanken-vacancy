@@ -993,8 +993,10 @@ const platsbankenVacancy = ({
   * Notes:
   *   The "experience" type is flagged as being required, while
   *   the other two are not. The XSDs indicate that this tag is entirely
-  *   optional. This may be enforced at the application level, but is untested.
-  *   Here we are assuming that it is in fact a required element.
+  *   optional.
+  *
+  *   In testing, "experience" is optional, but it will default to "required"
+  *   if not included.
   *
   *   The XSDs indicate other possible attributes and values for the
   *   Qualification element. (Values documented in HRXML 0.99 are starred):
@@ -1030,7 +1032,13 @@ const platsbankenVacancy = ({
   *     - equipment*
   *     - other
   *
-  *   <Qualification type="experience"> also requires a "yearsOfExperience" attribute.
+  *   <Qualification type="experience"> also requires either a "yearsOfExperience"
+  *   attribute or a "experienceRequired" attribute. "yearsOfExperience" is the
+  *   attribute specified in the documentation. It can take two values:
+  *   1 == 'not required', 4 == 'required'. Because of the ambiguity in the
+  *   attribute's name, we have added an "required" parameter which
+  *   accepts a boolean value and can be used instead.
+  *
   *   <Qualification type="license"> also requires a "description" with the value
   *     "DriversLicense" and a "category" attribute.
   *   <Qualification type="equipment"> requires  a "description" attribute with
@@ -1051,7 +1059,7 @@ const platsbankenVacancy = ({
 
   jsonQualification: ({ _attr } = {}) => ({ Qualification: { _attr } }),
 
-  validateQualification: ({ type, description, yearsOfExperience, category }) => {
+  validateQualification: ({ type, description, yearsOfExperience, category, required }) => {
     Joi.assert({
       type,
     }, {
@@ -1059,16 +1067,52 @@ const platsbankenVacancy = ({
         'certification', 'equipment', 'other']).optional(),
     });
 
-    Joi.assert({
-      type,
-      yearsOfExperience,
-    }, {
-      type: Joi.string().optional(),
-      yearsOfExperience: Joi.when('type', {
-        is: 'experience',
-        then: Joi.required(),
-      }).description('If type is "experience", "yearsOfExperience" is required.'),
-    });
+    // these two try/catch blocks check for alternate valid values when
+    // type === 'experience'. Either "yearsOfExperience" or "required" must
+    // be set. "required" is preferred as it is more obvious; "yearsOfExperience"
+    // is used in the API, but must be set to 1 (not required) or 4 (required).
+    // See note above.
+    if (type != null && type === 'experience') {
+      let experienceError = null;
+      try {
+        Joi.assert({
+          type,
+          yearsOfExperience,
+        }, {
+          type: Joi.string().optional(),
+          yearsOfExperience: Joi.when('type', {
+            is: 'experience',
+            then: Joi.valid(1, 4).required(),
+          }).description('If type is "experience", and "required" is not set, "yearsOfExperience" must be 1 or 4.'),
+        });
+      } catch (e) {
+        experienceError = e;
+      }
+
+      // type === 'experience', but there was no "yearsOfExperience"
+      // check if "required" was passed instead
+      if (experienceError != null) {
+        experienceError = null;
+        try {
+          Joi.assert({
+            type,
+            required,
+          }, {
+            type: Joi.string().optional(),
+            required: Joi.when('type', {
+              is: 'experience',
+              then: Joi.boolean().required(),
+            }).description('If type is "experience", "required" is required and must be boolean.'),
+          });
+        } catch (e) {
+          experienceError = e;
+        }
+      }
+
+      if (experienceError != null) {
+        throw (experienceError);
+      }
+    }
 
     Joi.assert({
       type,
@@ -1098,17 +1142,24 @@ const platsbankenVacancy = ({
     });
   },
 
-  qualification({ type, description, yearsOfExperience, category, ...attrs }) {
+  qualification({ type, description, yearsOfExperience, category, required, ...attrs }) {
     // make sure we have the required parent elements
     if (!this.ref.QualificationsRequired) {
       this.qualificationsRequired();
     }
 
-    this.validateQualification({ type, description, yearsOfExperience, category });
+    this.validateQualification({ type, description, yearsOfExperience, category, required });
     // make sure we have the required parent element
     if (!this.ref.JobPositionRequirements) {
       this.jobPositionRequirements();
     }
+
+    if (required === true) {
+      yearsOfExperience = 4;
+    } else if (required === false) {
+      yearsOfExperience = 1;
+    }
+
     const _attr = {
       type,
       description,
