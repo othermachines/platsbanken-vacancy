@@ -14,6 +14,7 @@
 const vacancy = require('../build/platsbanken-vacancy.js');
 const http = require('http');
 const util = require('util');
+const uuidv4 = require('uuid/v4');
 
 const config = require('config');
 
@@ -39,23 +40,26 @@ const options = {
 
 const request = vacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
 
+const postingId = `${identity.orgNumber}-${uuidv4()}`;
+const transactionId = uuidv4();
+
 try {
   request
     .sender({
       id: identity.customerNumber,
-      email: 'foo@bar.com',
+      email: 'sender@example.com',
     })
     .transaction({
-      id: 'TRANSACTION GUID',
+      id: transactionId,
     })
     .jobPositionPosting({
-      id: `${identity.orgNumber}-1234567890-1234567890-1234567890-q`,
+      id: postingId,
       status: 'active',
     })
     .hiringOrg({
       name: identity.companyName,
       id: identity.orgNumber,
-      url: 'http://example.org?hiringOrg',
+      url: 'http://example.org/hiringOrg',
     })
     .hiringOrgContact({
       countryCode: 'SE',
@@ -67,8 +71,8 @@ try {
     .postDetail({
       startDate: '2018-09-01',
       endDate: '2018-12-01',
-      recruiterName: 'Alex Smith',
-      recruiterEmail: 'alexsmith@example.org',
+      recruiterName: 'Recruiter Name',
+      recruiterEmail: 'recruiter@example.org',
     })
     .jobPositionTitle({
       title: 'Job Title',
@@ -120,10 +124,10 @@ try {
     // or byEmail(), included for clarity
     .applicationMethods()
     .byWeb({
-      url: 'http://example.org?byWeb',
+      url: 'http://example.org/byWeb',
     })
     .byEmail({
-      email: 'foo@example.org',
+      email: 'byEmailcontact@example.org',
     })
     .numberToFill({
       number: 1,
