@@ -41,7 +41,7 @@ const config = require('config');
 const chalk = require('chalk');
 const sprintf = require('sprintf-js').sprintf;
 const vsprintf = require('sprintf-js').vsprintf;
-const argparser = require('argparse').ArgumentParser;
+const ArgumentParser = require('argparse').ArgumentParser;
 const wordwrap = require('word-wrap');
 
 const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -57,7 +57,7 @@ const routes = {
 
 const path = env === 'production' ? routes.postJobLive : routes.postJobTest;
 
-const parser = new argparser({
+const parser = new ArgumentParser({
   version: '0.0.1',
   addHelp: true,
   description: 'platsbanken-vacancy example script',
