@@ -124,7 +124,7 @@ const options = { indent: '  ' };
 
 /* start helper functions */
 
-function createVacancy({ postingId }) {
+function createSubmission({ postingId, title, status }) {
   const vacancy = platsbankenVacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
 
   vacancy
@@ -137,7 +137,7 @@ function createVacancy({ postingId }) {
     })
     .jobPositionPosting({
       id: postingId,
-      status: 'active',
+      status,
     })
     .hiringOrg({
       name: identity.companyName,
@@ -158,207 +158,7 @@ function createVacancy({ postingId }) {
       recruiterEmail: 'recruiter@example.org',
     })
     .jobPositionTitle({
-      title: 'Job Title',
-    })
-    .jobPositionPurpose({
-      purpose: 'Job purpose',
-    })
-    .jobPositionLocation({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
-    })
-    .classification({
-      scheduleType: 'part',
-      duration: 'temporary',
-      scheduleSummaryText: 'Schedule Summary',
-      durationSummaryText: 'Duration Summary',
-      termLength: 2,
-    })
-    .compensationDescription({
-      currency: 'SEK',
-      salaryType: 1,
-      benefits: 'Benefits',
-      summary: 'Benefits summary text',
-    })
-    .qualificationsRequiredSummary({
-      summary: 'Summary of qualifications',
-    })
-    .qualification({
-      type: 'license',
-      description: 'DriversLicense',
-      category: 'B',
-    })
-    .qualification({
-      type: 'experience',
-      // same as: yearsOfExperience: 4
-      required: true,
-    })
-    .qualification({
-      type: 'equipment',
-      description: 'Car',
-    })
-    .qualificationsPreferredSummary({
-      summary: 'Preferred qualifications',
-    })
-    // applicationMethods() not neccessary, will be called by byWeb()
-    // or byEmail(), included for clarity
-    .applicationMethods()
-    .byWeb({
-      url: 'http://example.org/byWeb',
-    })
-    .byEmail({
-      email: 'byEmailcontact@example.org',
-    })
-    .numberToFill({
-      number: 1,
-    })
-    .hiringOrgDescription({
-      description: 'Hiring org description',
-    })
-    .occupationGroup({
-      code: 7652,
-    });
-  return vacancy;
-}
-
-function updateVacancy({ postingId }) {
-  const vacancy = platsbankenVacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
-
-  vacancy
-    .sender({
-      id: identity.customerNumber,
-      email: 'sender@example.com',
-    })
-    .transaction({
-      id: shortid.generate(),
-    })
-    .jobPositionPosting({
-      id: postingId,
-      status: 'active',
-    })
-    .hiringOrg({
-      name: identity.companyName,
-      id: identity.orgNumber,
-      url: 'http://example.org/hiringOrg',
-    })
-    .hiringOrgContact({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
-    })
-    .postDetail({
-      startDate: '2018-09-01',
-      endDate: '2018-12-01',
-      recruiterName: 'Recruiter Name',
-      recruiterEmail: 'recruiter@example.org',
-    })
-    .jobPositionTitle({
-      title: 'Job Title Updated',
-    })
-    .jobPositionPurpose({
-      purpose: 'Job purpose',
-    })
-    .jobPositionLocation({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
-    })
-    .classification({
-      scheduleType: 'part',
-      duration: 'temporary',
-      scheduleSummaryText: 'Schedule Summary',
-      durationSummaryText: 'Duration Summary',
-      termLength: 2,
-    })
-    .compensationDescription({
-      currency: 'SEK',
-      salaryType: 1,
-      benefits: 'Benefits',
-      summary: 'Benefits summary text',
-    })
-    .qualificationsRequiredSummary({
-      summary: 'Summary of qualifications',
-    })
-    .qualification({
-      type: 'license',
-      description: 'DriversLicense',
-      category: 'B',
-    })
-    .qualification({
-      type: 'experience',
-      // same as: yearsOfExperience: 4
-      required: true,
-    })
-    .qualification({
-      type: 'equipment',
-      description: 'Car',
-    })
-    .qualificationsPreferredSummary({
-      summary: 'Preferred qualifications',
-    })
-    // applicationMethods() not neccessary, will be called by byWeb()
-    // or byEmail(), included for clarity
-    .applicationMethods()
-    .byWeb({
-      url: 'http://example.org/byWeb',
-    })
-    .byEmail({
-      email: 'byEmailcontact@example.org',
-    })
-    .numberToFill({
-      number: 1,
-    })
-    .hiringOrgDescription({
-      description: 'Hiring org description',
-    })
-    .occupationGroup({
-      code: 7652,
-    });
-  return vacancy;
-}
-
-function deleteVacancy({ postingId }) {
-  const vacancy = platsbankenVacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
-
-  vacancy
-    .sender({
-      id: identity.customerNumber,
-      email: 'sender@example.com',
-    })
-    .transaction({
-      id: shortid.generate(),
-    })
-    .jobPositionPosting({
-      id: postingId,
-      status: 'inactive',
-    })
-    .hiringOrg({
-      name: identity.companyName,
-      id: identity.orgNumber,
-      url: 'http://example.org/hiringOrg',
-    })
-    .hiringOrgContact({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
-    })
-    .postDetail({
-      startDate: '2018-09-01',
-      endDate: '2018-12-01',
-      recruiterName: 'Recruiter Name',
-      recruiterEmail: 'recruiter@example.org',
-    })
-    .jobPositionTitle({
-      title: 'Job Title',
+      title,
     })
     .jobPositionPurpose({
       purpose: 'Job purpose',
@@ -560,7 +360,11 @@ if (args.create) {
     data.vacancy = {};
 
     try {
-      data.vacancy = createVacancy({ postingId: data.postingId });
+      data.vacancy = createSubmission({
+        postingId: data.postingId,
+        title: 'Job title',
+        status: 'active',
+      });
     } catch (err) {
       next(err);
     }
@@ -570,10 +374,17 @@ if (args.create) {
 
 if (args.update) {
   tasks.push((data, next) => {
-    out('info', 'Updating vacancy', data.postingId);
+    const postingId = args.id != null
+      ? args.id
+      : data.postingId;
+    out('info', 'Updating vacancy', postingId);
 
     try {
-      data.vacancy = updateVacancy({ postingId: data.postingId });
+      data.vacancy = createSubmission({
+        postingId,
+        title: 'Job title updated',
+        status: 'active',
+      });
     } catch (err) {
       next(err);
     }
@@ -583,10 +394,17 @@ if (args.update) {
 
 if (args.delete) {
   tasks.push((data, next) => {
-    out('info', 'Deleting vacancy', data.postingId);
+    const postingId = args.id != null
+      ? args.id
+      : data.postingId;
+    out('info', 'Deleting vacancy', postingId);
 
     try {
-      data.vacancy = deleteVacancy({ postingId: data.postingId });
+      data.vacancy = createSubmission({
+        postingId,
+        title: 'Job title deleted',
+        status: 'inactive',
+      });
     } catch (err) {
       next(err);
     }
