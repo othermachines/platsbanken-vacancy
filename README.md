@@ -8,10 +8,6 @@ submission to the Arbetsförmedlingen Platsbanken API.
 
 It does not perform the submission or handle responses. See `./example/example.js`.
 
-## Todo
-- Coming very soon, update and remove vacancies.
-- Document minimal requirements for submitting a vacancy.
-
 ## Install
 
 `npm install --save @othermachines/platsbanken-vacancy`
@@ -146,6 +142,16 @@ try {
 const xmlString = request.toString();
 ```
 
+## Sample scripts
+There are three scripts in the examples directory:
+- minimal.js: demonstrate creation of XML for adding a new vacancy. Minimal fluff, start here.
+- example.js: full fat demo, including adding, updating, and deleting vacancies.
+See comments at top of script for more detail.
+- apiTest.js: executes tests required by Arbetsförmedling to use API.*
+
+\* Note that currently the API is returning an error for test #7 (add vacancy
+  outside of Sweden), apparently on the address.
+
 ## Running the example script (./example/example.js)
 The script uses [config](https://www.npmjs.com/package/config) to set organisation-specfic
 information (company name, customer number, organisation number). If you just
@@ -162,12 +168,12 @@ node example.js
 
 You can output the JSON object that is used to create the XML:
 
-`node example.js json`
+`node example.js --json`
 
 You can use example.js to submit a test request. The API will return an error
 unless valid values have been set in your config file:
 
-`node example.js submit`
+`node example.js --create --submit`
 
 You can set NODE_ENV to "production" if you want to submit to the live API.
 
