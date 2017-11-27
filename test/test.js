@@ -93,6 +93,9 @@ const params = {
     type: 'experience',
     yearsOfExperience: 1,
   }, {
+    type: 'experience',
+    required: true,
+  }, {
     type: 'equipment',
     description: 'Car',
   }],
@@ -266,6 +269,12 @@ const invalidParams = {
     description: 'DriversLicense',
   }, {
     type: 'experience',
+  }, {
+    type: 'experience',
+    yearsOfExperience: 2,
+  }, {
+    type: 'experience',
+    required: 'invalid',
   }, {
     type: 'equipment',
   }, {

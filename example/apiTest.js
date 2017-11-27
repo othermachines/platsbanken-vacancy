@@ -1,11 +1,7 @@
 /*
-* $ export NODE_ENV=production
-*   Setting to 'production' will submit to the live server.
-*   Defaults to 'development'.
-*
 * usage: example.js [-h] [-v] [-j] [-x] [-s] [-c] [-u] [-d] [-i ID]
 *
-* platsbanken-vacancy example script
+* platsbanken-vacancy submission test script
 *
 * Optional arguments:
 *  -h, --help      Show this help message and exit.
@@ -13,22 +9,21 @@
 *  -j, --json      output json
 *  -x, --xml       output xml
 *  -s, --submit    submit postings to Arbetsförmedling
-*  -c, --create    create vacancy
-*  -u, --update    update vacancy
-*  -d, --delete    delete vacancy
-*  -i ID, --id ID  posting id, will generate new one if not provided
+*  -c, --create    create vacancies
+*  -u, --update    update vacancies
+*  -d, --delete    delete vacancies
+*  -b, --batch     batch number, used in generating posting ids
 *
 * Examples
-*   Unless you have set the NODE_ENV environment variable to "production",
-*   these will submit to the test server:
+*   These will submit to the test server:
 *
-*   output XML for adding a vacancy and exit (will not send):
+*   output XML for adding a vacancies and exit (will not send):
 *     $ node example.js --create --xml
 *
-*   submit a new vacancy to Arbetsförmedling:
+*   submit new vacancies to Arbetsförmedling:
 *     $ node example.js --create --submit
 *
-*   update a vacancy at Arbetsförmedling:
+*   update vacancies at Arbetsförmedling:
 *    $ node example.js --update --submit --id POST_ID_HERE
 */
 
@@ -44,23 +39,17 @@ const vsprintf = require('sprintf-js').vsprintf;
 const ArgumentParser = require('argparse').ArgumentParser;
 const wordwrap = require('word-wrap');
 
-const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const identity = config.get('identity');
 
 const hostname = 'api.arbetsformedlingen.se';
 const port = 80;
 
-const routes = {
-  postJobLive: '/ledigtarbete/apiledigtarbete/hrxml',
-  postJobTest: '/ledigtarbete/apiledigtarbete/test/hrxml',
-};
-
-const path = env === 'production' ? routes.postJobLive : routes.postJobTest;
+const path = '/ledigtarbete/apiledigtarbete/test/hrxml';
 
 const parser = new ArgumentParser({
   version: '0.0.1',
   addHelp: true,
-  description: 'platsbanken-vacancy example script',
+  description: 'platsbanken-vacancy submission test script',
 });
 
 parser.addArgument(
@@ -90,7 +79,7 @@ parser.addArgument(
 parser.addArgument(
   ['-c', '--create'],
   {
-    help: 'create vacancy',
+    help: 'create vacancies',
     action: 'storeTrue',
   },
 );
@@ -98,7 +87,7 @@ parser.addArgument(
 parser.addArgument(
   ['-u', '--update'],
   {
-    help: 'update vacancy',
+    help: 'update vacancies',
     action: 'storeTrue',
   },
 );
@@ -106,15 +95,15 @@ parser.addArgument(
 parser.addArgument(
   ['-d', '--delete'],
   {
-    help: 'delete vacancy',
+    help: 'delete vacancies',
     action: 'storeTrue',
   },
 );
 
 parser.addArgument(
-  ['-i', '--id'],
+  ['-b', '--batch'],
   {
-    help: 'posting id, will generate new one if not provided',
+    help: 'batch number, used in generating posting ids',
   },
 );
 
@@ -124,8 +113,30 @@ const options = { indent: '  ' };
 
 /* start helper functions */
 
-function createSubmission({ postingId, title, status }) {
+function createSubmission({
+  postingId,
+  scheduleType = 'full',
+  termLength,
+  salaryType = 1,
+  title,
+  jobPositionLocation = {
+    countryCode: 'SE',
+    postalCode: '11356',
+    municipality: '0180',
+    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+    streetName: 'Birger Jarlsgatan 58',
+  },
+  qualifications = [{
+    type: 'experience',
+    // same as: yearsOfExperience: 4
+    required: true,
+  }],
+  code = 7652,
+  comment,
+} = {}) {
   const vacancy = platsbankenVacancy('http://arbetsformedlingen.se/LedigtArbete', '0.52', options);
+
+  const duration = termLength ? 'temporary' : 'regular';
 
   vacancy
     .sender({
@@ -137,7 +148,7 @@ function createSubmission({ postingId, title, status }) {
     })
     .jobPositionPosting({
       id: postingId,
-      status,
+      status: 'active',
     })
     .hiringOrg({
       name: identity.companyName,
@@ -161,47 +172,32 @@ function createSubmission({ postingId, title, status }) {
       title,
     })
     .jobPositionPurpose({
-      purpose: 'Job purpose',
+      purpose: comment,
     })
-    .jobPositionLocation({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
-    })
+    .jobPositionLocation(jobPositionLocation)
     .classification({
-      scheduleType: 'part',
-      duration: 'temporary',
+      scheduleType,
+      duration,
       scheduleSummaryText: 'Schedule Summary',
       durationSummaryText: 'Duration Summary',
       termLength: 2,
     })
     .compensationDescription({
       currency: 'SEK',
-      salaryType: 1,
+      salaryType,
       benefits: 'Benefits',
       summary: 'Benefits summary text',
     })
     .qualificationsRequiredSummary({
-      summary: 'Summary of qualifications',
-    })
-    .qualification({
-      type: 'license',
-      description: 'DriversLicense',
-      category: 'B',
-    })
-    .qualification({
-      type: 'experience',
-      // same as: yearsOfExperience: 4
-      required: true,
-    })
-    .qualification({
-      type: 'equipment',
-      description: 'Car',
-    })
+      summary: 'Qualifications required summary',
+    });
+
+  qualifications.forEach((q) => {
+    vacancy.qualification(q);
+  });
+  vacancy
     .qualificationsPreferredSummary({
-      summary: 'Preferred qualifications',
+      summary: 'Qualifications preferred summary',
     })
     // applicationMethods() not neccessary, will be called by byWeb()
     // or byEmail(), included for clarity
@@ -218,9 +214,8 @@ function createSubmission({ postingId, title, status }) {
     .hiringOrgDescription({
       description: 'Hiring org description',
     })
-    .occupationGroup({
-      code: 7652,
-    });
+    .occupationGroup({ code });
+
   return vacancy;
 }
 
@@ -344,71 +339,126 @@ function finalize(err, data) {
 
 /* end helper functions */
 
+/* start test parameters */
+const params = [];
+const batch = args.batch ? args.batch : '000';
+
+params.push({
+  postingId: `${identity.orgNumber}-${batch}1`,
+  scheduleType: 'full',
+  termLength: 2, // 6 months or longer
+  comment: 'Full time, temporary, 6 months or longer, in Sweden.',
+}, {
+  postingId: `${identity.orgNumber}-${batch}2`,
+  scheduleType: 'part',
+  comment: 'Part time, permanent, in Sweden.',
+}, {
+  postingId: `${identity.orgNumber}-${batch}3`,
+  scheduleType: 'full',
+  termLength: 7, // 11 days to 3 months
+  comment: 'Full time, 11 days to 3 months, in Sweden',
+}, {
+  postingId: `${identity.orgNumber}-${batch}4`,
+  scheduleType: 'part',
+  termLength: 3, // 3-6 months
+  salaryType: 3, // commission only
+  comment: 'Part time, 3 - 6 months, in Sweden, commission only.',
+}, {
+  postingId: `${identity.orgNumber}-${batch}5`,
+  scheduleType: 'full',
+  termLength: 4, // summer months
+  salaryType: 2, // fixed plus commission
+  comment: 'Full time, summer months, in Sweden, fixed plus commission.',
+}, {
+  postingId: `${identity.orgNumber}-${batch}6`,
+  scheduleType: 'full',
+  termLength: 2, // 6 months or longer
+  comment: `Full time, temporary (test specification does not specify term and term is required, using 6 months+),
+unspecified workplace in Sweden (not possible according to docs - API requires a work address)`,
+}, {
+  postingId: `${identity.orgNumber}-${batch}7`,
+  scheduleType: 'full',
+  salaryType: 1, // fixed
+  jobPositionLocation: {
+    countryCode: 'CA',
+    postalCode: '99999',
+    municipality: '9999',
+    addressLine: '27 Lake Drive, Banff, Canada',
+    streetName: '27 Lake Drive',
+  },
+  comment: 'Full time, workplace outside Sweden, fixed salary.',
+}, {
+  postingId: `${identity.orgNumber}-${batch}8`,
+  scheduleType: 'full',
+  termLength: 2, // 6 months or longer
+  salaryType: 2, // fixed plus commission
+  qualifications: [{
+    type: 'license',
+    description: 'DriversLicense',
+    category: 'C1E',
+  }],
+  code: '5687', // Truck driver
+  comment: `Full time, 6 months or longer, in Sweden, requires driver's license (C1E),
+fixed plus commission, truck driver.`,
+});
+
+/* end test parameters */
+
 const tasks = [];
 tasks.push((next) => {
-  const postingId = args.id != null
-    ? args.id
-    : `${identity.orgNumber}-${shortid.generate()}`;
-
-  next(null, { postingId });
+  next(null, { });
 });
 
 if (args.create) {
-  tasks.push((data, next) => {
-    out('info', 'Creating new vacancy', data.postingId);
+  params.forEach((p) => {
+    tasks.push((data, next) => {
+      out('info', 'Creating new vacancy', p.postingId);
 
-    data.vacancy = {};
+      data.vacancy = {};
 
-    try {
-      data.vacancy = createSubmission({
-        postingId: data.postingId,
-        title: 'Job title',
-        status: 'active',
-      });
-    } catch (err) {
-      next(err);
-    }
-    processRequest(data, next);
+      try {
+        p.title = 'Job Title';
+        p.status = 'active';
+        data.vacancy = createSubmission(p);
+      } catch (err) {
+        next(err);
+      }
+      processRequest(data, next);
+    });
   });
 }
 
 if (args.update) {
-  tasks.push((data, next) => {
-    const postingId = args.id != null
-      ? args.id
-      : data.postingId;
-    out('info', 'Updating vacancy', postingId);
+  params.forEach((p) => {
+    tasks.push((data, next) => {
+      out('info', 'Updating vacancy', p.postingId);
 
-    try {
-      data.vacancy = createSubmission({
-        postingId,
-        title: 'Job title updated',
-        status: 'active',
-      });
-    } catch (err) {
-      next(err);
-    }
-    processRequest(data, next);
+      try {
+        p.title = 'Job Title updated';
+        p.status = 'active';
+        data.vacancy = createSubmission(p);
+      } catch (err) {
+        next(err);
+      }
+      processRequest(data, next);
+    });
   });
 }
 
 if (args.delete) {
-  tasks.push((data, next) => {
-    const postingId = args.id != null
-      ? args.id
-      : data.postingId;
-    out('info', 'Deleting vacancy', postingId);
+  params.forEach((p) => {
+    tasks.push((data, next) => {
+      out('info', 'Deleting vacancy', p.postingId);
 
-    try {
-      data.vacancy = createSubmission({
-        postingId,
-        title: 'Job title deleted',
-        status: 'inactive',
-      });
-    } catch (err) {
-      next(err);
-    }
-    processRequest(data, next);
+      try {
+        p.title = 'Job Title deleted';
+        p.status = 'inactive';
+        data.vacancy = createSubmission(p);
+      } catch (err) {
+        next(err);
+      }
+      processRequest(data, next);
+    });
   });
 }
 

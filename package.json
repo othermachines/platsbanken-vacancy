@@ -1,6 +1,6 @@
 {
   "name": "@othermachines/platsbanken-vacancy",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "API for submitting vacancies to Arbetsförmedlingen Platsbanken (Swedish Employment Agency jobs bank)",
   "main": "build/platsbanken-vacancy.js",
   "repository": {
@@ -31,6 +31,8 @@
     "xml": "^1.0.1"
   },
   "devDependencies": {
+    "argparse": "^1.0.9",
+    "async": "^2.6.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
@@ -38,12 +40,16 @@
     "chai": "^4.1.2",
     "chai-things": "^0.2.0",
     "chai-xml": "^0.3.1",
+    "chalk": "^2.3.0",
     "config": "^1.27.0",
     "eslint": "^4.10.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.4.0",
-    "http": "0.0.0"
+    "http": "0.0.0",
+    "shortid": "^2.2.8",
+    "sprintf-js": "^1.1.1",
+    "word-wrap": "^1.2.3"
   }
 }
