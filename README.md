@@ -103,7 +103,7 @@ try {
     })
     .qualification({
       type: 'experience',
-      yearsOfExperience: 1,
+      required: true,
     })
     .qualification({
       type: 'equipment',
