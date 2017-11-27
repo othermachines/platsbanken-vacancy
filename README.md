@@ -163,7 +163,7 @@ cd example/config/
 
 cp default.sample.json default.json
 
-node example.js
+node example.js --create --xml
 ```
 
 You can output the JSON object that is used to create the XML:
