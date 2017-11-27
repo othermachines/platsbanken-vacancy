@@ -117,7 +117,6 @@ try {
     .applicationMethods()
     .byWeb({
       url: 'http://example.org',
-      summary: 'summary text',
     })
     .byEmail({
       email: 'foo@example.org',
