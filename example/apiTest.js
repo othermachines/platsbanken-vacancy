@@ -197,7 +197,7 @@ function createSubmission({
   });
   vacancy
     .qualificationsPreferredSummary({
-      summary: 'Qualifications preferred summary'
+      summary: 'Qualifications preferred summary',
     })
     // applicationMethods() not neccessary, will be called by byWeb()
     // or byEmail(), included for clarity
