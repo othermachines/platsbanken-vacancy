@@ -272,6 +272,14 @@ const platsbankenVacancy = ({
   * HRXML 0.99
   * <Municipality>
   * Name of town/city for the delivery address
+  *
+  * NOTE: this appears to be be incorrect. The Municipality field expects a
+  * four digit code from the municipalities list. Includes special codes:
+  *   9090: unspecified location within Sweden
+  *   9999: location outside Sweden
+  *
+  * Validation for this field, below, checks for a four character string,
+  * rather than <=50 as specified in HRXML 0.99.
   */
 
   /*
@@ -317,7 +325,7 @@ const platsbankenVacancy = ({
     Joi.assert({ countryCode, postalCode, municipality, addressLine, streetName }, {
       countryCode: Joi.string().length(2).required(),
       postalCode: Joi.string().length(5).required(),
-      municipality: Joi.string().max(50).required(),
+      municipality: Joi.string().length(4).required(),
       addressLine: Joi.string().max(50).required(),
       streetName: Joi.string().max(50).required(),
     });
