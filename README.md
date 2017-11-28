@@ -176,6 +176,13 @@ unless valid values have been set in your config file:
 
 You can set NODE_ENV to "production" if you want to submit to the live API.
 
+## Oddities
+Errors may be returned with HTTP status 202 or 400.
+
+202 is returned with errors that appear to have been generated at the application level, e.g., from invalid values such as non-existent postal codes. Just because you got a 2xx response back doesn't mean the post was successful, check your response error code! (See example.js).
+
+400 seems to usually be errors when validating against XSDs, although it will also be returned if you have an invalid customer number.
+
 ## Thank you
 Development of this module was made possible by
 [Internationella Engelska Skolan](https://engelska.se).
