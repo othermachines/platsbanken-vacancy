@@ -337,6 +337,7 @@ function finalize(err, data) {
     } else {
       console.log(err);
     }
+    process.exit(1);
   } else {
     out('success', 'Done', data.postingId);
   }
