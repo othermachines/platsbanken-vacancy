@@ -845,6 +845,7 @@ const platsbankenVacancy = ({
     Joi.assert({
       currency,
       salaryType,
+      summary,
     }, {
       currency: Joi.any().required(),
       salaryType: Joi.number().valid([1, 2, 3]).required(),
