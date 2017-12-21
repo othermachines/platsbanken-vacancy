@@ -840,6 +840,7 @@ const platsbankenVacancy = ({
     }],
   }),
 
+  // TODO default params
   validateCompensationDescription: ({ currency, salaryType, benefits, summary }) => {
     Joi.assert({
       currency,
@@ -847,6 +848,7 @@ const platsbankenVacancy = ({
     }, {
       currency: Joi.any().required(),
       salaryType: Joi.number().valid([1, 2, 3]).required(),
+      summary: Joi.any().required(),
     });
 
     let totalLength = 0;
