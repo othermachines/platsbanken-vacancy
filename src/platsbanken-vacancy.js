@@ -746,11 +746,15 @@ const platsbankenVacancy = ({
     scheduleType,
     duration,
     termLength,
+    scheduleSummaryText,
+    durationSummaryText,
   }) => {
     Joi.assert({
       scheduleType,
       duration,
       termLength,
+      scheduleSummaryText,
+      durationSummaryText,
     }, {
       scheduleType: Joi.string().valid(['full', 'part']).required(),
       duration: Joi.string().valid(['regular', 'temporary']).required(),
@@ -758,6 +762,8 @@ const platsbankenVacancy = ({
         is: 'part',
         then: Joi.valid([2, 3, 4, 7, 8]).required(),
       }).description('Required if position is temporary'),
+      scheduleSummaryText: Joi.string().required(),
+      durationSummaryText: Joi.string().required(),
     });
   },
 
@@ -772,6 +778,8 @@ const platsbankenVacancy = ({
       scheduleType,
       duration,
       termLength,
+      scheduleSummaryText,
+      durationSummaryText,
     });
 
     // make sure we have the required parent element
