@@ -257,7 +257,6 @@ function send(data, next) {
     method: 'POST',
     headers: {
       'Content-Type': 'text/xml',
-      'Content-Length': payload.length,
     },
   };
 
