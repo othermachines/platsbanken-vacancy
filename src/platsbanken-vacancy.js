@@ -758,8 +758,8 @@ const platsbankenVacancy = ({
     }, {
       scheduleType: Joi.string().valid(['full', 'part']).required(),
       duration: Joi.string().valid(['regular', 'temporary']).required(),
-      termLength: Joi.when('scheduleType', {
-        is: 'part',
+      termLength: Joi.when('duration', {
+        is: 'temporary',
         then: Joi.valid([2, 3, 4, 7, 8]).required(),
       }).description('Required if position is temporary'),
       scheduleSummaryText: Joi.string().required(),
