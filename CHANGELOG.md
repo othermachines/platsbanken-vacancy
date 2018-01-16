@@ -1,4 +1,11 @@
 # Changelog
+## 0.3.0 on 2018-01-16
+- corrected validation for municipality codes.
+- benefits and compensation description are optional, do not count on them being set when validating.
+- benefits summary text is required.
+- validation fixes for termLength and scheduleType in classification.
+- update dependencies.
+
 ## 0.2.0 on 2017-11-27
 - changed signature for byWeb(), should not accept summary text.
 - added "required" attribute when adding an "experience required" qualifcation().
