@@ -257,7 +257,6 @@ function send(data, next) {
     method: 'POST',
     headers: {
       'Content-Type': 'text/xml',
-      'Content-Length': payload.length,
     },
   };
 
@@ -337,6 +336,7 @@ function finalize(err, data) {
     } else {
       console.log(err);
     }
+    process.exit(1);
   } else {
     out('success', 'Done', data.postingId);
   }

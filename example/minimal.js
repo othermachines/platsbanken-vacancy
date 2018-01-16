@@ -176,7 +176,6 @@ if (args.submit) {
     method: 'POST',
     headers: {
       'Content-Type': 'text/xml',
-      'Content-Length': payload.length,
     },
   };
 

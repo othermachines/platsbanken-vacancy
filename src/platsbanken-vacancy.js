@@ -272,6 +272,14 @@ const platsbankenVacancy = ({
   * HRXML 0.99
   * <Municipality>
   * Name of town/city for the delivery address
+  *
+  * NOTE: this appears to be be incorrect. The Municipality field expects a
+  * four digit code from the municipalities list. Includes special codes:
+  *   9090: unspecified location within Sweden
+  *   9999: location outside Sweden
+  *
+  * Validation for this field, below, checks for a four character string,
+  * rather than <=50 as specified in HRXML 0.99.
   */
 
   /*
@@ -317,7 +325,7 @@ const platsbankenVacancy = ({
     Joi.assert({ countryCode, postalCode, municipality, addressLine, streetName }, {
       countryCode: Joi.string().length(2).required(),
       postalCode: Joi.string().length(5).required(),
-      municipality: Joi.string().max(50).required(),
+      municipality: Joi.string().length(4).required(),
       addressLine: Joi.string().max(50).required(),
       streetName: Joi.string().max(50).required(),
     });
@@ -738,18 +746,24 @@ const platsbankenVacancy = ({
     scheduleType,
     duration,
     termLength,
+    scheduleSummaryText,
+    durationSummaryText,
   }) => {
     Joi.assert({
       scheduleType,
       duration,
       termLength,
+      scheduleSummaryText,
+      durationSummaryText,
     }, {
       scheduleType: Joi.string().valid(['full', 'part']).required(),
       duration: Joi.string().valid(['regular', 'temporary']).required(),
-      termLength: Joi.when('scheduleType', {
-        is: 'part',
+      termLength: Joi.when('duration', {
+        is: 'temporary',
         then: Joi.valid([2, 3, 4, 7, 8]).required(),
       }).description('Required if position is temporary'),
+      scheduleSummaryText: Joi.string().required(),
+      durationSummaryText: Joi.string().required(),
     });
   },
 
@@ -764,6 +778,8 @@ const platsbankenVacancy = ({
       scheduleType,
       duration,
       termLength,
+      scheduleSummaryText,
+      durationSummaryText,
     });
 
     // make sure we have the required parent element
@@ -832,15 +848,26 @@ const platsbankenVacancy = ({
     }],
   }),
 
+  // TODO default params
   validateCompensationDescription: ({ currency, salaryType, benefits, summary }) => {
     Joi.assert({
       currency,
       salaryType,
+      summary,
     }, {
       currency: Joi.any().required(),
       salaryType: Joi.number().valid([1, 2, 3]).required(),
+      summary: Joi.any().required(),
     });
-    if (benefits.length + summary.length > 255) {
+
+    let totalLength = 0;
+    if (benefits != null && benefits.length != null) {
+      totalLength += benefits.length;
+    }
+    if (summary != null && summary.length != null) {
+      totalLength += summary.length;
+    }
+    if (totalLength > 255) {
       throw new Error('Summary text length plus benefits text length must not exceed 255 characters');
     }
   },
@@ -853,10 +880,6 @@ const platsbankenVacancy = ({
       benefits,
       summary,
     }));
-
-    if (benefits.length + summary.length > 255) {
-      throw new Error('Summary text length plus benefits text length must not exceed 255 characters');
-    }
 
     return this;
   },

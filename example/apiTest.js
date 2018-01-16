@@ -252,7 +252,6 @@ function send(data, next) {
     method: 'POST',
     headers: {
       'Content-Type': 'text/xml',
-      'Content-Length': payload.length,
     },
   };
 
@@ -379,14 +378,7 @@ unspecified workplace in Sweden (not possible according to docs - API requires a
   postingId: `${identity.orgNumber}-${batch}7`,
   scheduleType: 'full',
   salaryType: 1, // fixed
-  jobPositionLocation: {
-    countryCode: 'CA',
-    postalCode: '99999',
-    municipality: '9999',
-    addressLine: '27 Lake Drive, Banff, Canada',
-    streetName: '27 Lake Drive',
-  },
-  comment: 'Full time, workplace outside Sweden, fixed salary.',
+  comment: 'Full time, workplace outside Sweden (location outside Sweden ot accepted in JobPositionLocation), fixed salary.',
 }, {
   postingId: `${identity.orgNumber}-${batch}8`,
   scheduleType: 'full',
