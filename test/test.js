@@ -1144,14 +1144,14 @@ describe('PlatsbankenVacancy', () => {
       .jobPositionPosting(param('jobPositionPosting'))
       .applicationReferenceID(param('applicationReferenceID'));
 
-    it('should add an ApplicationReferenceID element to JPPExtension', () => {
+    it('should add an ApplicationReferenceId element to JPPExtension', () => {
       expect(request.json()
         .Envelope[request.index('Envelope')]
         .Packet[request.index('Packet')]
         .Payload[request.index('Payload')]
         .JobPositionPosting[request.index('JobPositionPosting')]
         .JPPExtension)
-        .include.something.to.have.property('ApplicationReferenceID');
+        .include.something.to.have.property('ApplicationReferenceId');
     });
   });
 
