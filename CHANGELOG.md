@@ -1,4 +1,7 @@
 # Changelog
+## 0.4.0 on 2018-01-31
+- add additional contacts for further information (JPPExtension > InformationContact)
+- add a reference ID (JPPExtension > ApplicationReferenceId)
 ## 0.3.0 on 2018-01-16
 - corrected validation for municipality codes.
 - benefits and compensation description are optional, do not count on them being set when validating.

@@ -124,6 +124,16 @@ const params = {
     code: 12345,
     codename: 'OccupationNameID',
   }],
+  contact: [{
+    name: 'Jane Fortman',
+  }, {
+    name: 'Jane Fortman',
+    phone: '555.555.5555',
+    email: 'jane@example.org',
+  }],
+  applicationReferenceID: {
+    id: 'ABC123',
+  },
 };
 
 const param = (name) => {
@@ -302,6 +312,8 @@ const invalidParams = {
     code: 12345,
     codename: 'invalid codename',
   }],
+  contact: { },
+  applicationReferenceID: { },
 };
 
 describe('PlatsbankenVacancy', () => {
@@ -1031,6 +1043,115 @@ describe('PlatsbankenVacancy', () => {
         .JobPositionPosting[request.index('JobPositionPosting')]
         .JPPExtension)
         .include.something.to.have.property('OccupationGroup');
+    });
+  });
+
+  describe('contact()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .contact(param('contact'));
+
+    it('should add an InformationContact element to JPPExtension', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension)
+        .include.something.to.have.property('InformationContact');
+    });
+
+    it('should add a Contact element to InformationContact', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact)
+        .include.something.to.have.property('Contact');
+    });
+
+    it('should add a PersonName element to Contact', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact[request.index('InformationContact')]
+        .Contact)
+        .include.something.to.have.property('PersonName');
+    });
+
+    it('should add a FormattedName element to PersonName', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact[request.index('InformationContact')]
+        .Contact[0]
+        .PersonName)
+        .include.something.to.have.property('FormattedName');
+    });
+
+    it('should add a VoiceNumber element to Contact', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact[request.index('InformationContact')]
+        .Contact)
+        .include.something.to.have.property('VoiceNumber');
+    });
+
+    it('should add a TelNumber element to VoiceNumber', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact[request.index('InformationContact')]
+        .Contact[1]
+        .VoiceNumber)
+        .include.something.to.have.property('TelNumber');
+    });
+
+    it('should add an E-mail element to Contact', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension[request.index('JPPExtension')]
+        .InformationContact[request.index('InformationContact')]
+        .Contact)
+        .include.something.to.have.property('E-mail');
+    });
+  });
+
+  describe('applicationReferenceID()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .applicationReferenceID(param('applicationReferenceID'));
+
+    it('should add an ApplicationReferenceId element to JPPExtension', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension)
+        .include.something.to.have.property('ApplicationReferenceId');
     });
   });
 

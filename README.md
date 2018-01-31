@@ -183,6 +183,40 @@ Errors may be returned with HTTP status 202 or 400.
 
 400 seems to usually be errors when validating against XSDs, although it will also be returned if you have an invalid customer number.
 
+The JPPExtension element requires that children occur in a specific order. If you receive an error similar to:
+```
+  The element 'JPPExtension' in namespace
+  'http://arbetsformedlingen.se/LedigtArbete' has
+  invalid child element 'ApplicationReferenceID' in
+  namespace
+  'http://arbetsformedlingen.se/LedigtArbete'. List
+  of possible elements expected:
+  'LastDateApplication, ApplicationReferenceId,
+  RequiredQualification, PreferredQualification' in
+  namespace
+  'http://arbetsformedlingen.se/LedigtArbete'.
+```
+check the order in which you are adding elements. Method calls must be in this order, though only occupationGroup() is required:
+```
+vacancy
+  .hiringOrgDescription({
+    description: 'Hiring org description',
+  })
+  .contact({
+    name: 'Contact Name',
+    phone: '555.555.5555',
+    email: 'contact@example.org',
+  })
+  .occupationGroup({
+    code: 7652,
+  })
+  .applicationReferenceID({
+    id: 'ABC123',
+  });
+```
+
+(Note that this appears to apply to other tag sets as well - the XSDs make liberal use of sequence - but this was the first time it bit me.)
+
 ## Thank you
 Development of this module was made possible by
 [Internationella Engelska Skolan](https://engelska.se).

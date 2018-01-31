@@ -218,8 +218,21 @@ function createSubmission({ postingId, title, status }) {
     .hiringOrgDescription({
       description: 'Hiring org description',
     })
+    .contact({
+      name: 'Contact Name',
+      phone: '555.555.5555',
+      email: 'contact@example.org',
+    })
+    .contact({
+      name: 'Contact Name2',
+      phone: '555.555.5556',
+      email: 'contact2@example.org',
+    })
     .occupationGroup({
       code: 7652,
+    })
+    .applicationReferenceID({
+      id: 'ABC123',
     });
   return vacancy;
 }

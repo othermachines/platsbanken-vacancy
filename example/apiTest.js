@@ -214,7 +214,22 @@ function createSubmission({
     .hiringOrgDescription({
       description: 'Hiring org description',
     })
-    .occupationGroup({ code });
+    .informationContact()
+    .contact({
+      name: 'Contact Name',
+      phone: '555.555.5555',
+      email: 'contact@example.org',
+    })
+    .contact({
+      name: 'Contact Name 2',
+      phone: '555.555.5556',
+      email: 'contac2t@example.org',
+    })
+    .occupationGroup({ code })
+    // informationContact() not neccessary, will be called by contact(), included for clarity
+    .applicationReferenceID({
+      id: 'ABC123',
+    });
 
   return vacancy;
 }
