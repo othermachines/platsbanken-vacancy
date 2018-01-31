@@ -214,8 +214,6 @@ function createSubmission({
     .hiringOrgDescription({
       description: 'Hiring org description',
     })
-    .occupationGroup({ code })
-    // informationContact() not neccessary, will be called by contact(), included for clarity
     .informationContact()
     .contact({
       name: 'Contact Name',
@@ -227,6 +225,8 @@ function createSubmission({
       phone: '555.555.5556',
       email: 'contac2t@example.org',
     })
+    .occupationGroup({ code })
+    // informationContact() not neccessary, will be called by contact(), included for clarity
     .applicationReferenceID({
       id: 'ABC123',
     });

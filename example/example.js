@@ -218,9 +218,6 @@ function createSubmission({ postingId, title, status }) {
     .hiringOrgDescription({
       description: 'Hiring org description',
     })
-    .occupationGroup({
-      code: 7652,
-    })
     .contact({
       name: 'Contact Name',
       phone: '555.555.5555',
@@ -230,6 +227,9 @@ function createSubmission({ postingId, title, status }) {
       name: 'Contact Name2',
       phone: '555.555.5556',
       email: 'contact2@example.org',
+    })
+    .occupationGroup({
+      code: 7652,
     })
     .applicationReferenceID({
       id: 'ABC123',
