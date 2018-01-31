@@ -225,6 +225,9 @@ function createSubmission({ postingId, title, status }) {
       name: 'Contact Name',
       phone: '555.555.5555',
       email: 'contact@example.org',
+    })
+    .applicationReferenceID({
+      id: 'ABC123',
     });
   return vacancy;
 }

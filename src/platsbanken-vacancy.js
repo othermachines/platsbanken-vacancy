@@ -1593,6 +1593,35 @@ const platsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * HRXML 0.99
+  * <JPPExtension><ApplicationReferenceID>
+  * A reference identifier which should be quoted when applicant applies for job.
+  * Is published in JobPosting.
+  */
+
+  jsonApplicationReferenceID: ({
+    id: ApplicationReferenceID,
+  } = {}) => ({
+    ApplicationReferenceID,
+  }),
+
+  validateApplicationReferenceID: ({ id } = {}) => {
+    Joi.assert({ id }, { id: Joi.string().required() });
+  },
+
+  applicationReferenceID({ id } = {}) {
+    this.validateApplicationReferenceID({ id });
+
+    if (!this.ref.JPPExtension) {
+      this.jppExtension();
+    }
+
+    this.ref.JPPExtension.push(this.jsonApplicationReferenceID({ id }));
+
+    return this;
+  },
+
 });
 
 module.exports = platsbankenVacancy;

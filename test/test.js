@@ -131,6 +131,9 @@ const params = {
     phone: '555.555.5555',
     email: 'jane@example.org',
   }],
+  applicationReferenceID: {
+    id: 'ABC123',
+  },
 };
 
 const param = (name) => {
@@ -310,6 +313,7 @@ const invalidParams = {
     codename: 'invalid codename',
   }],
   contact: { },
+  applicationReferenceID: { },
 };
 
 describe('PlatsbankenVacancy', () => {
@@ -1130,6 +1134,24 @@ describe('PlatsbankenVacancy', () => {
         .InformationContact[request.index('InformationContact')]
         .Contact)
         .include.something.to.have.property('E-mail');
+    });
+  });
+
+  describe('applicationReferenceID()', () => {
+    const request = Vacancy();
+    request.sender(param('sender'))
+      .transaction(param('transaction'))
+      .jobPositionPosting(param('jobPositionPosting'))
+      .applicationReferenceID(param('applicationReferenceID'));
+
+    it('should add an ApplicationReferenceID element to JPPExtension', () => {
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .JPPExtension)
+        .include.something.to.have.property('ApplicationReferenceID');
     });
   });
 
