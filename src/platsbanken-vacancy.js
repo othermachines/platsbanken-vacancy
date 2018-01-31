@@ -1595,15 +1595,15 @@ const platsbankenVacancy = ({
 
   /*
   * HRXML 0.99
-  * <JPPExtension><ApplicationReferenceID>
+  * <JPPExtension><ApplicationReferenceId>
   * A reference identifier which should be quoted when applicant applies for job.
   * Is published in JobPosting.
   */
 
   jsonApplicationReferenceID: ({
-    id: ApplicationReferenceID,
+    id: ApplicationReferenceId,
   } = {}) => ({
-    ApplicationReferenceID,
+    ApplicationReferenceId,
   }),
 
   validateApplicationReferenceID: ({ id } = {}) => {
