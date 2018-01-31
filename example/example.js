@@ -220,6 +220,11 @@ function createSubmission({ postingId, title, status }) {
     })
     .occupationGroup({
       code: 7652,
+    })
+    .contact({
+      name: 'Contact Name',
+      phone: '555.555.5555',
+      email: 'contact@example.org',
     });
   return vacancy;
 }

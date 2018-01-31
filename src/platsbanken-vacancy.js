@@ -1504,6 +1504,95 @@ const platsbankenVacancy = ({
     return this;
   },
 
+
+  /*
+  * <JPPExtension><InformationContact>
+  *
+  * Container tag for contacts. This method does not need to be called directly,
+  * it will be called by contact() if required.
+  */
+  jsonInformationContact: () => ({ InformationContact: [] }),
+
+  informationContact() {
+    if (!this.ref.JPPExtension) {
+      this.jppExtension();
+    }
+
+    this.ref.JPPExtension.push(this.jsonInformationContact());
+
+    this.makeRef({
+      obj: this.ref,
+      target: 'InformationContact',
+      parent: 'JPPExtension',
+    });
+
+    return this;
+  },
+
+  /*
+  * HRXML 0.99
+  * <JPPExtension><InformationContact><Contact>
+  *
+  * To declare a union contact person, specify 'union' as value for the 'type' attribute.
+  * If type is ommitted, the contact is interpreted as a non-union contact.
+  * Can be repeated; 4 company and 3 union contact persons are allowed.
+  */
+
+  /*
+  * HRXML 0.99
+  * <JPPExtension><InformationContact><Contact><FormattedName>
+  * Full name of person who applicants can contact for more information.
+  *
+  * To register the name Either FormattedName or GivenName + FamilyName can be used.
+  * FormattedName is chosen by default.
+  */
+
+  /*
+  * <JPPExtension><InformationContact><Contact>
+  * The API will accept up to 7 contacts (see note above).
+  * This module does not currently check the number and type of contacts for validity.
+  */
+
+  /*
+  * <JPPExtension><InformationContact><Contact><FormattedName>
+  * Note that while the API can also accept GivenName + FamilyName, only FormattedName
+  * is implemented here.
+  */
+
+  jsonContact: ({
+    name: FormattedName,
+    phone: TelNumber,
+    email,
+  } = {}) => ({
+    Contact: [{
+      PersonName: [{ FormattedName }],
+    }, {
+      VoiceNumber: [{ TelNumber }],
+    }, {
+      'E-mail': email,
+    }],
+  }),
+
+  validateContact: ({ name, phone, email } = {}) => {
+    Joi.assert({ name }, { name: Joi.string().required() });
+    Joi.assert({ phone, email }, {
+      phone: Joi.string().optional(),
+      email: Joi.string().email().optional(),
+    });
+  },
+
+  contact({ name, phone, email } = {}) {
+    this.validateContact({ name, phone, email });
+
+    if (!this.ref.InformationContact) {
+      this.informationContact();
+    }
+
+    this.ref.InformationContact.push(this.jsonContact({ name, phone, email }));
+
+    return this;
+  },
+
 });
 
 module.exports = platsbankenVacancy;
