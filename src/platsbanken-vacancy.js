@@ -1418,6 +1418,27 @@ const platsbankenVacancy = ({
     return this;
   },
 
+  /*
+  * <JPPExtension>
+  * Note that elements in JPPExtension must occur in a specific order:
+  *   vacancy
+  *     .hiringOrgDescription({
+  *       description: 'Hiring org description',
+  *     })
+  *     .contact({
+  *       name: 'Contact Name',
+  *       phone: '555.555.5555',
+  *       email: 'contact@example.org',
+  *     })
+  *     .occupationGroup({
+  *       code: 7652,
+  *     })
+  *     .applicationReferenceID({
+  *       id: 'ABC123',
+  *     });
+  *
+  * See README, under Oddities
+  */
   jsonJPPExtension: () => ({ JPPExtension: [] }),
 
   jppExtension() {
