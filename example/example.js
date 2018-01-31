@@ -226,6 +226,11 @@ function createSubmission({ postingId, title, status }) {
       phone: '555.555.5555',
       email: 'contact@example.org',
     })
+    .contact({
+      name: 'Contact Name2',
+      phone: '555.555.5556',
+      email: 'contact2@example.org',
+    })
     .applicationReferenceID({
       id: 'ABC123',
     });
