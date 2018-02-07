@@ -38,11 +38,15 @@ const params = {
     { id: '123-456', status: 'active' },
     { id: '123-456', status: 'inactive' },
   ],
-  hiringOrg: {
+  hiringOrg: [{
+    name: 'ORG NAME',
+    id: '46-XXYYZZ-XXYY-1',
+  }, {
     name: 'ORG NAME',
     id: '46-XXYYZZ-XXYY-1',
     url: 'http://example.org',
-  },
+    description: 'Organizational unit description',
+  }],
   hiringOrgContact: {
     countryCode: 'SE',
     postalCode: '11356',
@@ -471,6 +475,23 @@ describe('PlatsbankenVacancy', () => {
         .JobPositionPosting[request.index('JobPositionPosting')]
         .HiringOrg)
         .include.something.to.have.property('HiringOrgId');
+
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
+        .include.something.to.have.property('OrganizationalUnit');
+
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg[3]
+        .OrganizationalUnit)
+        .include.something.to.have.property('Description');
     });
   });
 

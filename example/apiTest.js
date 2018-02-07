@@ -154,6 +154,7 @@ function createSubmission({
       name: identity.companyName,
       id: identity.orgNumber,
       url: 'http://example.org/hiringOrg',
+      description: 'Organizational unit description',
     })
     .hiringOrgContact({
       countryCode: 'SE',

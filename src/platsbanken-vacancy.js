@@ -221,8 +221,19 @@ const platsbankenVacancy = ({
     name: HiringOrgName,
     id: HiringOrgId,
     url: WebSite,
+    description: Description,
   } = {}) => ({
-    HiringOrg: [{ HiringOrgName }, { HiringOrgId }, { WebSite }],
+    HiringOrg: [{
+      HiringOrgName,
+    }, {
+      HiringOrgId,
+    }, {
+      WebSite,
+    }, {
+      OrganizationalUnit: [{
+        Description,
+      }],
+    }],
   }),
 
   validateHiringOrg: ({ name, id, url }) => {
@@ -230,16 +241,17 @@ const platsbankenVacancy = ({
       name: Joi.string().required(),
       id: Joi.string().required(),
       url: Joi.string().optional(),
+      description: Joi.string().optional(),
     });
   },
 
-  hiringOrg({ name, id, url } = {}) {
+  hiringOrg({ name, id, url, description } = {}) {
     this.validateHiringOrg({ name, id, url });
     if (!this.ref.JobPositionPosting) {
       throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
-    this.ref.JobPositionPosting.push(this.jsonHiringOrg({ name, id, url }));
+    this.ref.JobPositionPosting.push(this.jsonHiringOrg({ name, id, url, description }));
 
     this.makeRef({
       obj: this.ref,
