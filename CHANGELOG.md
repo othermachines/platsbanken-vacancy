@@ -1,4 +1,6 @@
 # Changelog
+## 0.5.0 on 2018-02-07
+- added optional description parameter to hiringOrg() <HiriginOrg><OrganizationalUnit><Description>
 ## 0.4.0 on 2018-01-31
 - add additional contacts for further information (JPPExtension > InformationContact)
 - add a reference ID (JPPExtension > ApplicationReferenceId)

@@ -53,6 +53,7 @@ try {
       name: 'Company Name',
       id: '46-123456-1234'
       url: 'http://example.org',
+      description: 'Organizational unit description',
     })
     .hiringOrgContact({
       countryCode: 'SE',
@@ -216,6 +217,18 @@ vacancy
 ```
 
 (Note that this appears to apply to other tag sets as well - the XSDs make liberal use of sequence - but this was the first time it bit me.)
+
+There are two places where a description of the organization can be added. These are:
+```
+<Envelope><Packet><Payload><JobPositionPosting><HiringOrg><OrganizationalUnit><Description>
+```
+added via the `hiringOrg({name, id, url, description})` method, and
+```
+<Envelope><Packet><Payload><JPPExtension><HiringOrgDescription>
+```
+added via the `hiringOrgDescription({ description })` method.
+
+Neither is required, and the documentation is unclear on the difference. Best guess until I try this out is that they appear in a different order in the job ad.
 
 ## Thank you
 Development of this module was made possible by
