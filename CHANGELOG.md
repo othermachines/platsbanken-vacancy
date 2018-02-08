@@ -1,5 +1,8 @@
 # Changelog
+## 1.0.0 on 2018-02-07
+- BACKWARDS INCOMPATIBLE CHANGE. Calls to hiringOrgContact() must be removed, and contact information supplied in the call to `hiringOrg({ name, id, url, contact, description})`. See changelog note for 0.5.0.
 ## 0.5.0 on 2018-02-07
+- IMPORTANT. This version is broken. HiringOrg > OrganizationalUnit > Description must occur *after* HiringOrg > Contact, or it will be rejected by the Arbetsförmedling's API. If you are using hiringOrgContact(), the tags will occur in the wrong order.
 - added optional description parameter to hiringOrg() <HiriginOrg><OrganizationalUnit><Description>
 ## 0.4.0 on 2018-01-31
 - add additional contacts for further information (JPPExtension > InformationContact)
