@@ -41,19 +41,26 @@ const params = {
   hiringOrg: [{
     name: 'ORG NAME',
     id: '46-XXYYZZ-XXYY-1',
+    contact: {
+      countryCode: 'SE',
+      postalCode: '11356',
+      municipality: '0180',
+      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+      streetName: 'Birger Jarlsgatan 58',
+    },
   }, {
     name: 'ORG NAME',
     id: '46-XXYYZZ-XXYY-1',
     url: 'http://example.org',
+    contact: {
+      countryCode: 'SE',
+      postalCode: '11356',
+      municipality: '0180',
+      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+      streetName: 'Birger Jarlsgatan 58',
+    },
     description: 'Organizational unit description',
   }],
-  hiringOrgContact: {
-    countryCode: 'SE',
-    postalCode: '11356',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  },
   postDetail: {
     startDate: '2018-09-01',
     endDate: '2018-12-01',
@@ -162,32 +169,6 @@ const invalidParams = {
     name: 'ORG NAME',
   }, {
     id: '46-XXYYZZ-XXYY-1',
-  }],
-  hiringOrgContact: [{
-    postalCode: '11356',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  }, {
-    countryCode: 'SE',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  }, {
-    countryCode: 'SE',
-    postalCode: '11356',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-    streetName: 'Birger Jarlsgatan 58',
-  }, {
-    countryCode: 'SE',
-    postalCode: '11356',
-    municipality: '0180',
-    streetName: 'Birger Jarlsgatan 58',
-  }, {
-    countryCode: 'SE',
-    postalCode: '11356',
-    municipality: '0180',
-    addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
   }],
   postDetail: [{
     endDate: '2018-12-01',
@@ -482,6 +463,16 @@ describe('PlatsbankenVacancy', () => {
         .Payload[request.index('Payload')]
         .JobPositionPosting[request.index('JobPositionPosting')]
         .HiringOrg)
+        .include.something.to.have.property('Contact');
+
+      // TODO more comprehensive coverage on Contact
+
+      expect(request.json()
+        .Envelope[request.index('Envelope')]
+        .Packet[request.index('Packet')]
+        .Payload[request.index('Payload')]
+        .JobPositionPosting[request.index('JobPositionPosting')]
+        .HiringOrg)
         .include.something.to.have.property('OrganizationalUnit');
 
       expect(request.json()
@@ -489,38 +480,9 @@ describe('PlatsbankenVacancy', () => {
         .Packet[request.index('Packet')]
         .Payload[request.index('Payload')]
         .JobPositionPosting[request.index('JobPositionPosting')]
-        .HiringOrg[3]
+        .HiringOrg[4]
         .OrganizationalUnit)
         .include.something.to.have.property('Description');
-    });
-  });
-
-  describe('hiringOrgContact()', () => {
-    const request = Vacancy();
-    request.sender(param('sender'))
-      .transaction(param('transaction'))
-      .jobPositionPosting(param('jobPositionPosting'));
-
-    // should fail
-    it('should require hiringOrg() to have been called first', () => {
-      expect(() =>
-        request.hiringOrgContact(param('hiringOrgContact')),
-      ).to.throw();
-    });
-
-    // should pass
-    it('should add a Contact element to HiringOrg', () => {
-      request.hiringOrg(param('hiringOrg'));
-      request.hiringOrgContact(param('hiringOrgContact'));
-      expect(request.json()
-        .Envelope[request.index('Envelope')]
-        .Packet[request.index('Packet')]
-        .Payload[request.index('Payload')]
-        .JobPositionPosting[request.index('JobPositionPosting')]
-        .HiringOrg)
-        .include.something.to.have.property('Contact');
-
-      // TODO more comprehensive coverage on Contact
     });
   });
 
@@ -622,7 +584,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'));
 
@@ -649,7 +610,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'));
@@ -676,7 +636,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -704,7 +663,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -733,7 +691,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -774,7 +731,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionInformation()
       .jobPositionRequirements();
@@ -798,7 +754,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -828,7 +783,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -856,7 +810,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -887,7 +840,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))
@@ -1182,7 +1134,6 @@ describe('PlatsbankenVacancy', () => {
       .transaction(param('transaction'))
       .jobPositionPosting(param('jobPositionPosting'))
       .hiringOrg(param('hiringOrg'))
-      .hiringOrgContact(param('hiringOrgContact'))
       .postDetail(param('postDetail'))
       .jobPositionTitle(param('jobPositionTitle'))
       .jobPositionPurpose(param('jobPositionPurpose'))

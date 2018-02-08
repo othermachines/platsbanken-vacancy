@@ -143,14 +143,14 @@ function createSubmission({ postingId, title, status }) {
       name: identity.companyName,
       id: identity.orgNumber,
       url: 'http://example.org/hiringOrg',
+      contact: {
+        countryCode: 'SE',
+        postalCode: '11356',
+        municipality: '0180',
+        addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
+        streetName: 'Birger Jarlsgatan 58',
+      },
       description: 'Organizational unit description',
-    })
-    .hiringOrgContact({
-      countryCode: 'SE',
-      postalCode: '11356',
-      municipality: '0180',
-      addressLine: 'Birger Jarlsgatan 58, 11356, Stockholm',
-      streetName: 'Birger Jarlsgatan 58',
     })
     .postDetail({
       startDate: '2018-09-01',

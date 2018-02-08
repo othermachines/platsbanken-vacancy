@@ -57,6 +57,93 @@ const platsbankenVacancy = ({
 
   /*
   * HRXML 0.99
+  * <PostalAddress>
+  * Appears under the heading 'Arbetsgivare (Postadress/Besöksadress)' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <CountryCode>
+  * Country codes according to ISO 31661-1 alpha-2. (SE for Sweden.)
+  */
+
+  /*
+  * HRXML 0.99
+  * <PostalCode>
+  * The postal code for the delivery address. Must be a valid postcode without spaces.
+  */
+
+  /*
+  * HRXML 0.99
+  * <Municipality>
+  * Name of town/city for the delivery address
+  *
+  * NOTE: this appears to be be incorrect. The Municipality field expects a
+  * four digit code from the municipalities list. Includes special codes:
+  *   9090: unspecified location within Sweden
+  *   9999: location outside Sweden
+  *
+  * Validation for this field, below, checks for a four character string,
+  * rather than <=50 as specified in HRXML 0.99.
+  */
+
+  /*
+  * HRXML 0.99
+  * <AddressLine>
+  * Element can not be repeated.
+  * The workplaces' visiting address.
+  * Will be shown under heading 'Besöksadress' in the advert.
+  */
+
+  /*
+  * HRXML 0.99
+  * <StreetName>
+  * Street name for the delivery address of the workplace.
+  * (Either this or PostOfficeBox must be specified.)
+  *
+  * Note that PostOfficeBox is not implemented here. To make that a valid
+  * option, check whether StreetName or PostOfficeBox is supplied and
+  * construct appropriately. PostOfficeBox would go in the same place
+  * StreetName currently is.
+  */
+
+  /*
+  * Note: this information does not appear to be displayed anywhere
+  * (and HRXML 0.99 notes is that these elements are "not used"), but
+  * submission will fail with an error if they are omitted.
+  */
+
+  jsonPostalAddress: ({
+    countryCode: CountryCode,
+    postalCode: PostalCode,
+    municipality: Municipality,
+    addressLine: AddressLine,
+    streetName: StreetName,
+  } = {}) => ({
+    PostalAddress: [
+      { CountryCode }, { PostalCode }, { Municipality },
+      { DeliveryAddress: [{ AddressLine }, { StreetName }] },
+    ],
+  }),
+
+  validatePostalAddress: ({
+    countryCode,
+    postalCode,
+    municipality,
+    addressLine,
+    streetName,
+  } = {}) => {
+    Joi.assert({ countryCode, postalCode, municipality, addressLine, streetName }, {
+      countryCode: Joi.string().length(2).required(),
+      postalCode: Joi.string().length(5).required(),
+      municipality: Joi.string().length(4).required(),
+      addressLine: Joi.string().max(50).required(),
+      streetName: Joi.string().max(50).required(),
+    });
+  },
+
+  /*
+  * HRXML 0.99
   * <Sender:id>
   * Your company's customer number at Arbetsformedlingen
   * Customer number is supplied by Arbetsförmedlingen.
@@ -216,11 +303,11 @@ const platsbankenVacancy = ({
   * Adjusted Swedish organisation number, here in form of
   * country code (numerical) and Swedish organisation number
   */
-
   jsonHiringOrg: ({
     name: HiringOrgName,
     id: HiringOrgId,
     url: WebSite,
+    postalAddress: PostalAddress,
     description: Description,
   } = {}) => ({
     HiringOrg: [{
@@ -230,140 +317,47 @@ const platsbankenVacancy = ({
     }, {
       WebSite,
     }, {
+      Contact: [PostalAddress],
+    }, {
       OrganizationalUnit: [{
         Description,
       }],
     }],
   }),
 
-  validateHiringOrg: ({ name, id, url }) => {
-    Joi.assert({ name, id, url }, {
+  validateHiringOrg: ({ name, id, url, contact, description }) => {
+    Joi.assert({ name, id, url, contact, description }, {
       name: Joi.string().required(),
       id: Joi.string().required(),
       url: Joi.string().optional(),
+      contact: Joi.object().required(),
       description: Joi.string().optional(),
     });
+
+    // this.validatePostalAddress(contact);
   },
 
-  hiringOrg({ name, id, url, description } = {}) {
-    this.validateHiringOrg({ name, id, url });
+  hiringOrg({ name, id, url, contact, description } = {}) {
+    this.validateHiringOrg({ name, id, url, contact, description });
     if (!this.ref.JobPositionPosting) {
       throw new Error('HiringOrg must be attached to a JobPositionPosting element. Did you call jobPositionPosting()?');
     }
 
-    this.ref.JobPositionPosting.push(this.jsonHiringOrg({ name, id, url, description }));
+    const postalAddress = this.jsonPostalAddress(contact);
+
+    this.ref.JobPositionPosting.push(this.jsonHiringOrg({
+      name,
+      id,
+      url,
+      postalAddress,
+      description,
+    }));
 
     this.makeRef({
       obj: this.ref,
       target: 'HiringOrg',
       parent: 'JobPositionPosting',
     });
-
-    return this;
-  },
-
-  /*
-  * HRXML 0.99
-  * <PostalAddress>
-  * Appears under the heading 'Arbetsgivare (Postadress/Besöksadress)' in the advert.
-  */
-
-  /*
-  * HRXML 0.99
-  * <CountryCode>
-  * Country codes according to ISO 31661-1 alpha-2. (SE for Sweden.)
-  */
-
-  /*
-  * HRXML 0.99
-  * <PostalCode>
-  * The postal code for the delivery address. Must be a valid postcode without spaces.
-  */
-
-  /*
-  * HRXML 0.99
-  * <Municipality>
-  * Name of town/city for the delivery address
-  *
-  * NOTE: this appears to be be incorrect. The Municipality field expects a
-  * four digit code from the municipalities list. Includes special codes:
-  *   9090: unspecified location within Sweden
-  *   9999: location outside Sweden
-  *
-  * Validation for this field, below, checks for a four character string,
-  * rather than <=50 as specified in HRXML 0.99.
-  */
-
-  /*
-  * HRXML 0.99
-  * <AddressLine>
-  * Element can not be repeated.
-  * The workplaces' visiting address.
-  * Will be shown under heading 'Besöksadress' in the advert.
-  */
-
-  /*
-  * HRXML 0.99
-  * <StreetName>
-  * Street name for the delivery address of the workplace.
-  * (Either this or PostOfficeBox must be specified.)
-  *
-  * Note that PostOfficeBox is not implemented here. To make that a valid
-  * option, check whether StreetName or PostOfficeBox is supplied and
-  * construct appropriately. PostOfficeBox would go in the same place
-  * StreetName currently is.
-  */
-
-  /*
-  * Note: this information does not appear to be displayed anywhere
-  * (and HRXML 0.99 notes is that these elements are "not used"), but
-  * submission will fail with an error if they are omitted.
-  */
-
-  jsonPostalAddress: ({
-    countryCode: CountryCode,
-    postalCode: PostalCode,
-    municipality: Municipality,
-    addressLine: AddressLine,
-    streetName: StreetName,
-  } = {}) => ({
-    PostalAddress: [
-      { CountryCode }, { PostalCode }, { Municipality },
-      { DeliveryAddress: [{ AddressLine }, { StreetName }] },
-    ],
-  }),
-
-  validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
-    Joi.assert({ countryCode, postalCode, municipality, addressLine, streetName }, {
-      countryCode: Joi.string().length(2).required(),
-      postalCode: Joi.string().length(5).required(),
-      municipality: Joi.string().length(4).required(),
-      addressLine: Joi.string().max(50).required(),
-      streetName: Joi.string().max(50).required(),
-    });
-  },
-
-  jsonHiringOrgContact: ({ postalAddress: PostalAddress } = {}) => ({
-    Contact: [PostalAddress],
-  }),
-
-  validateHiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName }) {
-    this.validatePostalAddress({ countryCode, postalCode, municipality, addressLine, streetName });
-  },
-
-  hiringOrgContact({ countryCode, postalCode, municipality, addressLine, streetName } = {}) {
-    this.validateHiringOrgContact({
-      countryCode, postalCode, municipality, addressLine, streetName,
-    });
-
-    if (!this.ref.HiringOrg) {
-      throw new Error('Contact must be attached to a HiringOrg element. Did you call hiringOrg()?');
-    }
-    const postalAddress = this.jsonPostalAddress({
-      countryCode, postalCode, municipality, addressLine, streetName,
-    });
-
-    this.ref.HiringOrg.push(this.jsonHiringOrgContact({ postalAddress }));
 
     return this;
   },
