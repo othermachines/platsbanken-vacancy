@@ -191,7 +191,8 @@ const platsbankenVacancy = ({
   *  confirm email for submitted files.
   */
   jsonTransaction: ({ id: TransactId } = {}) => {
-    const _attr = { timeStamp: '2017-08-20T18:40:49Z' };
+    const now = new Date();
+    const _attr = { timeStamp: now.toISOString() };
     return { TransactInfo: [{ _attr }, { TransactId }] };
   },
 

@@ -1,6 +1,6 @@
 {
   "name": "@othermachines/platsbanken-vacancy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API for submitting vacancies to Arbetsförmedlingen Platsbanken (Swedish Employment Agency jobs bank)",
   "main": "build/platsbanken-vacancy.js",
   "repository": {
