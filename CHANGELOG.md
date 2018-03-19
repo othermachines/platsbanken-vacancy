@@ -1,4 +1,6 @@
 # Changelog
+## 1.0.1 on 2018-03-19
+- bugfix: timeStamp should not be hard coded.
 ## 1.0.0 on 2018-02-07
 - BACKWARDS INCOMPATIBLE CHANGE. Calls to hiringOrgContact() must be removed, and contact information supplied in the call to `hiringOrg({ name, id, url, contact, description})`. See changelog note for 0.5.0.
 ## 0.5.0 on 2018-02-07
